@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MultiMediaPost {
+public class MultiMediaPost implements Post{
     public UUID postID = null;
-    public ArrayList<Comment> comments = new ArrayList<>();
+    public ArrayList<Comment> comments;
     public String author = null;
     public String postName = null;
     public String postBody = null;
@@ -16,4 +16,14 @@ public class MultiMediaPost {
     public LocalDateTime editedOn = LocalDateTime.now();
     public String text = null;
     public String genre = null;
+
+    public MultiMediaPost(String postName, String text, String author, String genre, String media) {
+        comments = new ArrayList<>();
+    }
+
+    @Override
+    public void createPost() {
+        // TODO Auto-generated method stub
+
+    }
 }

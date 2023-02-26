@@ -17,7 +17,5 @@ public interface Post {
     public String text = null;
     public String genre = null;
 
-
-
-
+    public void createPost();
 }

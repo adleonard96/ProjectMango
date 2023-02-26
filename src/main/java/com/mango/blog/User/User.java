@@ -17,8 +17,14 @@ public class User {
     private String userPassword;
     private String email;
     private ArrayList<Post> posts = new ArrayList<Post>();
-    private HashMap<String, ArrayList<User>> userGroups = new HashMap<String, ArrayList<User>>();
-    private PostFactory postFactory = new PostFactory();
+    private HashMap<String, ArrayList<User>> userGroups;
+    private PostFactory postFactory;
 
-
+    public User(String userName, String userPassword, String email) {
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.email = email;
+        userGroups = new HashMap<String, ArrayList<User>>();
+        postFactory = new PostFactory();
+    }
 }

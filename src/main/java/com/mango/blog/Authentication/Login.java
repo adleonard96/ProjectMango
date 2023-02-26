@@ -1,6 +1,6 @@
 package com.mango.blog.Authentication;
 
-public class Login {
+public class Login implements Authentication {
     private String username;
     private String password;
 
