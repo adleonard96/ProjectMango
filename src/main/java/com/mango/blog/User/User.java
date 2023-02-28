@@ -64,6 +64,11 @@ public class User {
     public ArrayList<Post> getPosts() {
         return posts;
     }
+    
+    public Post getPost(String postID) {
+        Post post = posts.get(postID);
+        return post;
+    }
 
     public void setPosts(ArrayList<Post> posts) {
         this.posts = posts;
@@ -85,5 +90,10 @@ public class User {
     public void createPost(String postName, String text, String author, String genre) {
         Post post = postFactory.createPost(postName, text, author ,genre);
         posts.add(post);
+    }
+
+    public void deletePost(String postID){
+        Post post= getPost(postID); //retrieve the post object referenced by the ID  
+        posts.remove(post); //Need the post object 
     }
 }
