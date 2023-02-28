@@ -8,4 +8,5 @@ public class PostFactory {
     public Post createPost(String postName, String text, String author, String genre, String media){
         return new MultiMediaPost(postName, text, author, genre, media);
     }
+
 }
