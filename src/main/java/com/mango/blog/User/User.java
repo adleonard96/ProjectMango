@@ -2,14 +2,19 @@ package com.mango.blog.User;
 
 import com.mango.blog.Post.Post;
 import com.mango.blog.Post.PostFactory;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
 @Document(collection = "BlogData")
 public class User {
     @Id
@@ -19,6 +24,7 @@ public class User {
     private String email;
     private ArrayList<Post> posts = new ArrayList<Post>();
     private HashMap<String, ArrayList<User>> userGroups;
+    @Transient
     private PostFactory postFactory;
 
     public User(String userName, String userPassword, String email) {

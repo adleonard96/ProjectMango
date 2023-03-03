@@ -1,25 +1,32 @@
 package com.mango.blog.Post;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.mongodb.client.*;
+import com.mongodb.ExplainVerbosity;
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import org.bson.Document;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.bson.json.JsonObject;
+import org.springframework.web.bind.annotation.*;
 
-// object mapper to convert json to java object
-// import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+
 
 @RestController
 public class PostController {
+
+
     final
     UserRepository repo;
 
     public PostController(UserRepository repo) {
         this.repo = repo;
+
     }
 
     // TODO - Get the username from the current signed in user instead of the body
@@ -48,5 +55,21 @@ public class PostController {
             System.out.println(e);
             return "Error";
         }
+    }
+
+    @GetMapping("/Posts/PostById")
+    public String PostById(@RequestParam String postID){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
+        MongoDatabase database = mongoClient.getDatabase("MangoDB");
+        MongoCollection<Document> collection = database.getCollection("BlogData");
+        AggregateIterable<Document> posts;
+        posts = collection.aggregate(
+                Arrays.asList(
+                        Aggregates.unwind("$posts"),
+                        Aggregates.replaceRoot("$posts"),
+                        Aggregates.match(Filters.eq("postID", postID))
+                )
+        );
+        return posts.first().toJson();
     }
 }
