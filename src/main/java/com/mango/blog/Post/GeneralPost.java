@@ -2,13 +2,18 @@ package com.mango.blog.Post;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mango.blog.Comment.Comment;
+import jdk.jfr.DataAmount;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
 public class GeneralPost implements Post{
-    public UUID postID = UUID.randomUUID();
+    public String postID = UUID.randomUUID().toString();
     public ArrayList<Comment> comments;
     public String author;
     public String postName;
@@ -71,7 +76,7 @@ public class GeneralPost implements Post{
         this.genre = genre;
     }
 
-    public UUID getPostID() {
+    public String getPostID() {
         return postID;
     }
 

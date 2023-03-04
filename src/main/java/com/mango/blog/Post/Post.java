@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
+
 public interface Post {
     public UUID postID = null;
     public ArrayList<Comment> comments = new ArrayList<>();
