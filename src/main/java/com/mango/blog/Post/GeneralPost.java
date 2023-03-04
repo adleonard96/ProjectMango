@@ -2,6 +2,7 @@ package com.mango.blog.Post;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mango.blog.Comment.Comment;
+import jakarta.validation.constraints.NotNull;
 import jdk.jfr.DataAmount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,12 +17,15 @@ public class GeneralPost implements Post{
     public String postID = UUID.randomUUID().toString();
     public ArrayList<Comment> comments;
     public String author;
+    @NotNull(message = "postName is required")
     public String postName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime createdOn = LocalDateTime.now();
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime editedOn = LocalDateTime.now();
+    @NotNull(message = "text is required")
     public String text;
+    @NotNull(message = "genre is required")
     public String genre;
 
     public GeneralPost(String postName, String text, String author, String genre) {
