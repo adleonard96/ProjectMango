@@ -17,7 +17,6 @@ public class GeneralPost implements Post{
     public ArrayList<Comment> comments;
     public String author;
     public String postName;
-    public String postBody;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime createdOn = LocalDateTime.now();
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -40,7 +39,6 @@ public class GeneralPost implements Post{
                 ", comments:" + comments +
                 ", author:'" + author + '\'' +
                 ", postName:'" + postName + '\'' +
-                ", postBody:'" + postBody + '\'' +
                 ", createdOn:" + createdOn +
                 ", editedOn:" + editedOn +
                 ", text:'" + text + '\'' +
@@ -56,9 +54,6 @@ public class GeneralPost implements Post{
         this.postName = postName;
     }
 
-    public void setPostBody(String postBody) {
-        this.postBody = postBody;
-    }
 
     public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;
@@ -76,6 +71,7 @@ public class GeneralPost implements Post{
         this.genre = genre;
     }
 
+    @Override
     public String getPostID() {
         return postID;
     }
@@ -92,9 +88,6 @@ public class GeneralPost implements Post{
         return postName;
     }
 
-    public String getPostBody() {
-        return postBody;
-    }
 
     public LocalDateTime getCreatedOn() {
         return createdOn;

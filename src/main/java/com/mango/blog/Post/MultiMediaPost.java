@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class MultiMediaPost implements Post{
-    public UUID postID = null;
+    public String postID = null;
     public ArrayList<Comment> comments;
     public String author = null;
     public String postName = null;
@@ -25,5 +25,10 @@ public class MultiMediaPost implements Post{
     public void createPost() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public String getPostID() {
+        return postID.toString();
     }
 }
