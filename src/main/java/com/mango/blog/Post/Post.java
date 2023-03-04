@@ -13,4 +13,6 @@ public interface Post {
     public LocalDateTime editedOn = LocalDateTime.now();
 
     public void createPost();
+
+    public String getPostID();
 }
