@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -57,7 +58,13 @@ public class PostControllerTest {
     }
 
     @Test
-    void createGenericPostPost() {
+    void createGenericPostPost() throws Exception {
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        String validBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"author\":\"TestUser\",\"genre\":\"UnitTest\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/GeneralPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Basic YWRtaW46YWRtaW4=").content(validBody))
+                .andExpect(status().isCreated());
     }
 
     @Test

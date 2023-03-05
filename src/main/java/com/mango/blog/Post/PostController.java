@@ -13,6 +13,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 import org.bson.json.JsonObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,13 +35,13 @@ public class PostController {
 
     // TODO - Get the username from the current signed in user instead of the body
     @PostMapping("/GeneralPost")
-    public String createGenericPostPost(@RequestBody GeneralPost post){
+    public ResponseEntity createGenericPostPost(@RequestBody GeneralPost post){
         // Get the user from the database
         User user = repo.findByUserName(post.getAuthor());
         user.createPost(post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
         // Save the user to the database
         repo.save(user);
-        return "Post Created";
+        return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
     }
 
     @GetMapping("/GeneralPost")
