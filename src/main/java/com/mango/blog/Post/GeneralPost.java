@@ -76,6 +76,7 @@ public class GeneralPost implements Post{
         this.genre = genre;
     }
 
+    @Override
     public String getPostID() {
         return postID;
     }
@@ -115,6 +116,11 @@ public class GeneralPost implements Post{
     @Override
     public void createPost() {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override 
+    public void deletePost(){
 
     }
 
