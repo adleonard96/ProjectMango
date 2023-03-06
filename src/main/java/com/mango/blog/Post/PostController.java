@@ -39,10 +39,10 @@ public class PostController {
         repo.save(user);
         return "Post Created";
     }
-    @PostMapping("/GeneralPost")
+    @DeleteMapping("/GeneralPost")
     public String deleteGenericPostPost (@RequestBody GeneralPost post){
         User user = repo.findByUserName(post.getAuthor()); //Finding the user
-        user.deletePost(post.getPostName(), post.getText(), post.getGenre(), post.getAuthor()); //sending the post to the chopping block
+        user.deletePost(post.getPostID(),post.getPostName(), post.getText(), post.getGenre(), post.getAuthor()); //sending the post to the chopping block
         repo.save(user); //save new user
         return "Post Deleted";
     }

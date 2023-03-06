@@ -14,5 +14,5 @@ public interface Post {
 
     public void createPost();
     public void deletePost();
-    public void getPostID();
+    public String getPostID();
 }
