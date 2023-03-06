@@ -4,10 +4,10 @@ import com.mango.blog.Comment.Comment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.UUID;
+
 
 public class MultiMediaPost implements Post{
-    public UUID postID = null;
+    public String postID = null;
     public ArrayList<Comment> comments;
     public String author = null;
     public String postName = null;
@@ -20,10 +20,18 @@ public class MultiMediaPost implements Post{
     public MultiMediaPost(String postName, String text, String author, String genre, String media) {
         comments = new ArrayList<>();
     }
+    @Override
+    public String getPostID() {
+        return postID;
+    }
 
     @Override
     public void createPost() {
         // TODO Auto-generated method stub
+
+    }
+    @Override 
+    public void deletePost(){
 
     }
 }
