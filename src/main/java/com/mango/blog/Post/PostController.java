@@ -65,7 +65,7 @@ public class PostController {
     }
 
     @GetMapping("/Posts/PostById")
-    public String PostById(@RequestParam String postID){
+    public String postById(@RequestParam String postID){
         MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase database = mongoClient.getDatabase("MangoDB");
         MongoCollection<Document> collection = database.getCollection("BlogData");
@@ -78,5 +78,10 @@ public class PostController {
                 )
         );
         return posts.first().toJson();
+    }
+
+    @GetMapping("/Posts/AllPosts")
+    public ArrayList<String> allPosts(){
+        return repo.getAllPosts();
     }
 }
