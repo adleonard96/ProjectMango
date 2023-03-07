@@ -65,4 +65,15 @@ public class PostController {
 
         return repo.getPostsById(postID);
     }
+
+    @GetMapping("/Posts/Genres")
+    public String getGenres(){
+        System.out.println("something");
+        return repo.getGenres();
+    }
+
+    @GetMapping("/Posts/Genre")
+    public String PostsByGenre(@RequestParam String genre){
+        return repo.getPostsByGenre(genre);
+    }
 }
