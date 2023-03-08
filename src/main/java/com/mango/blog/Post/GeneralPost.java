@@ -93,7 +93,7 @@ public class GeneralPost implements Post{
         return postName;
     }
 
-
+    @Override
     public LocalDateTime getCreatedOn() {
         return createdOn;
     }
