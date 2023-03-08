@@ -31,4 +31,9 @@ public class MultiMediaPost implements Post{
     public String getPostID() {
         return postID.toString();
     }
+
+    @Override
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
 }

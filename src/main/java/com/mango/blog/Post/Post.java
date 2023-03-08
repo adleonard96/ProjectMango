@@ -15,4 +15,5 @@ public interface Post {
     public void createPost();
 
     public String getPostID();
+    public LocalDateTime getCreatedOn();
 }

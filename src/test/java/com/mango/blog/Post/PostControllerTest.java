@@ -90,4 +90,35 @@ public class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.genre").value("UnitTest"));
     }
 
+
+    @Test
+    void getGenres() throws Exception {
+        user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
+        user.createPost("Test Post 2", "This is a test post", user.getUserName(), "Mockito");
+        user.createPost("Test Post 3", "This is a test post", user.getUserName(), "JUnit");
+        String returnString = "[{\"_id\":\"UnitTest\",\"count\":1},{\"_id\":\"Mockito\",\"count\":1},{\"_id\":\"JUnit\",\"count\":1}]";
+
+        Mockito.when(repo.getGenres()).thenReturn(returnString);
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/Posts/Genres").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void postsByGenre() throws Exception {
+        user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
+        user.createPost("Test Post 2", "This is a test post", user.getUserName(), "Mockito");
+        user.createPost("Test Post 3", "This is a test post", user.getUserName(), "JUnit");
+
+        String returnString = "[{\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"author\":\"TestUser\",\"createdOn\": {\"$date\": \"" + user.getPosts().get(0).getCreatedOn() + "\"}}";
+
+        Mockito.when(repo.getPostsByGenre(anyString())).thenReturn(returnString);
+
+        mvc.perform(MockMvcRequestBuilders
+        .get("/Posts/ByGenre").contentType(MediaType.APPLICATION_JSON)
+                .param("genre", "UnitTest"))
+                .andExpect(status().isOk());
+    }
 }
