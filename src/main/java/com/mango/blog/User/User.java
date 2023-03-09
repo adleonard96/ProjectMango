@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -91,5 +92,18 @@ public class User {
     public void createPost(String postName, String text, String author, String genre) {
         Post post = postFactory.createPost(postName, text, author ,genre);
         posts.add(post);
+    }
+
+    public void updatePost(String postID, String postName, String text, String genre, String author) {
+        for (Post post : posts) {
+            if (post.getPostID().equals(postID)) {
+                post.setPostName(postName);
+                post.setText(text);
+                post.setGenre(genre);
+                post.setAuthor(author);
+                post.setEditedOn(LocalDateTime.now());
+                break;
+            }
+        }
     }
 }

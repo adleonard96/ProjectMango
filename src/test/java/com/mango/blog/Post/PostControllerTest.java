@@ -65,6 +65,8 @@ public class PostControllerTest {
                         .post("/GeneralPost").contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Basic YWRtaW46YWRtaW4=").content(validBody))
                 .andExpect(status().isCreated());
+
+        assert user.getPosts().size() == 1;
     }
 
     @Test
@@ -120,5 +122,21 @@ public class PostControllerTest {
         .get("/Posts/ByGenre").contentType(MediaType.APPLICATION_JSON)
                 .param("genre", "UnitTest"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void updatePost() throws Exception {
+        user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
+        Post test = user.getPosts().get(0);
+        String postID = test.getPostID();
+
+        String validBody = "{\"postID\":\"" + postID + "\",\"postName\":\"" + test.getPostName() + "\",\"text\":\"This is an updated body\",\"author\":\"" + test.getAuthor() + "\",\"genre\":\"" + test.getGenre() + "\"}";
+
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/Posts/UpdateGeneralPost").contentType(MediaType.APPLICATION_JSON).content(validBody)).andExpect(status().isOk());
+
+        assert user.getPosts().get(0).getText().equals("This is an updated body");
     }
 }

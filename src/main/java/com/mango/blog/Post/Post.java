@@ -12,8 +12,23 @@ public interface Post {
     public LocalDateTime createdOn = LocalDateTime.now();
     public LocalDateTime editedOn = LocalDateTime.now();
 
-    public void createPost();
-
     public String getPostID();
     public LocalDateTime getCreatedOn();
+
+    void setPostName(String postName);
+
+    void setText(String text);
+
+    void setGenre(String genre);
+
+    void setAuthor(String author);
+
+    void setEditedOn(LocalDateTime now);
+
+    String getPostName();
+
+    String getText();
+    String getGenre();
+    String getAuthor();
+
 }
