@@ -51,10 +51,11 @@ public class GeneralPost implements Post{
                 '}';
     }
 
+    @Override
     public void setAuthor(String author) {
         this.author = author;
     }
-
+    @Override
     public void setPostName(String postName) {
         this.postName = postName;
     }
@@ -63,15 +64,16 @@ public class GeneralPost implements Post{
     public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;
     }
-
+    @Override
     public void setEditedOn(LocalDateTime editedOn) {
         this.editedOn = editedOn;
     }
 
+    @Override
     public void setText(String text) {
         this.text = text;
     }
-
+    @Override
     public void setGenre(String genre) {
         this.genre = genre;
     }
@@ -84,11 +86,11 @@ public class GeneralPost implements Post{
     public ArrayList<Comment> getComments() {
         return comments;
     }
-
+    @Override
     public String getAuthor() {
         return author;
     }
-
+    @Override
     public String getPostName() {
         return postName;
     }
@@ -102,18 +104,15 @@ public class GeneralPost implements Post{
         return editedOn;
     }
 
+    @Override
     public String getText() {
         return text;
     }
-
+    @Override
     public String getGenre() {
         return genre;
     }
 
-    @Override
-    public void createPost() {
-        // TODO Auto-generated method stub
 
-    }
 
 }

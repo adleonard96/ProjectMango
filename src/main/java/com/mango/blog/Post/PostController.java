@@ -69,4 +69,12 @@ public class PostController {
     public String PostsByGenre(@RequestParam String genre){
         return repo.getPostsByGenre(genre);
     }
+
+    @PutMapping("/Posts/UpdateGeneralPost")
+    public String updatePost(@RequestBody GeneralPost post){
+        User user = repo.findByUserName(post.getAuthor());
+        user.updatePost(post.getPostID(), post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
+        repo.save(user);
+        return "Post Updated";
+    }
 }
