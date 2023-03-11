@@ -115,4 +115,9 @@ public class GeneralPost implements Post{
 
 
 
+    @Override 
+    public void deletePost(){
+
+    }
+
 }

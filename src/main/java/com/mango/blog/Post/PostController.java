@@ -1,15 +1,24 @@
 package com.mango.blog.Post;
 
 
+import com.mongodb.client.*;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import org.bson.Document;
+
+
 import jakarta.validation.Valid;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -35,6 +44,13 @@ public class PostController {
         repo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
     }
+    @DeleteMapping("/GeneralPost")
+    public String deleteGenericPostPost (@RequestBody GeneralPost post){
+        User user = repo.findByUserName(post.getAuthor()); //Finding the user
+        user.deletePost(post.getPostID(),post.getPostName(), post.getText(), post.getGenre(), post.getAuthor()); //sending the post to the chopping block
+        repo.save(user); //save new user
+        return "Post Deleted";
+    }
 
     @GetMapping("/Posts/GeneralPost")
     public String getGenericPost(){
@@ -54,6 +70,21 @@ public class PostController {
     }
 
     @GetMapping("/Posts/PostById")
+    public String postById(@RequestParam String postID){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
+        MongoDatabase database = mongoClient.getDatabase("MangoDB");
+        MongoCollection<Document> collection = database.getCollection("BlogData");
+        AggregateIterable<Document> posts;
+        posts = collection.aggregate(
+                Arrays.asList(
+                        Aggregates.unwind("$posts"),
+                        Aggregates.replaceRoot("$posts"),
+                        Aggregates.match(Filters.eq("postID", postID))
+                )
+        );
+        return posts.first().toJson();
+    }
+    
     public String PostById(@RequestParam String postID){
 
         return repo.getPostsById(postID);
@@ -61,7 +92,6 @@ public class PostController {
 
     @GetMapping("/Posts/Genres")
     public String getGenres(){
-        System.out.println("something");
         return repo.getGenres();
     }
 
@@ -76,5 +106,11 @@ public class PostController {
         user.updatePost(post.getPostID(), post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
         repo.save(user);
         return "Post Updated";
+
+    }
+
+    @GetMapping("/Posts/AllPosts")
+    public ArrayList<String> allPosts(){
+        return repo.getAllPosts();
     }
 }
