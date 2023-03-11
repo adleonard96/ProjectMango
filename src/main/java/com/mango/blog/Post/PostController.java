@@ -26,7 +26,7 @@ public class PostController {
     }
 
     // TODO - Get the username from the current signed in user instead of the body
-    @PostMapping("/GeneralPost")
+    @PostMapping("Posts/GeneralPost")
     public ResponseEntity createGenericPostPost(@Valid @RequestBody GeneralPost post){
         // Get the user from the database
         User user = repo.findByUserName(post.getAuthor());
@@ -36,7 +36,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
     }
 
-    @GetMapping("/GeneralPost")
+    @GetMapping("/Posts/GeneralPost")
     public String getGenericPost(){
         User user = repo.findByUserName("Test");
         System.out.println(user.getUserName());

@@ -62,7 +62,7 @@ public class PostControllerTest {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         String validBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"author\":\"TestUser\",\"genre\":\"UnitTest\"}";
         mvc.perform(MockMvcRequestBuilders
-                        .post("/GeneralPost").contentType(MediaType.APPLICATION_JSON)
+                        .post("/Posts/GeneralPost").contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Basic YWRtaW46YWRtaW4=").content(validBody))
                 .andExpect(status().isCreated());
 

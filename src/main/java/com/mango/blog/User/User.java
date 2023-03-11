@@ -25,6 +25,7 @@ public class User {
     private String email;
     private ArrayList<Post> posts = new ArrayList<Post>();
     private HashMap<String, ArrayList<User>> userGroups;
+    private ArrayList<HashMap<String, String>> favoritePosts = new ArrayList<>();
     @Transient
     private PostFactory postFactory;
 
@@ -106,4 +107,34 @@ public class User {
             }
         }
     }
+
+    public void addFavoritePost(String postID, String postName) {
+        HashMap<String, String> favoritePost = new HashMap<>();
+        favoritePost.put(postID, postName);
+        favoritePosts.add(favoritePost);
+    }
+
+    public boolean unfavoritePost(String postID) {
+        for (HashMap<String, String> favoritePost : favoritePosts) {
+            if (favoritePost.containsKey(postID)) {
+                favoritePosts.remove(favoritePost);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<HashMap<String, String>> getFavoritePosts() {
+        return  this.favoritePosts;
+    }
+
+    public boolean isFavorite(String postID) {
+        for (HashMap<String, String> favoritePost : favoritePosts) {
+            if (favoritePost.containsKey(postID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
