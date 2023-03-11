@@ -2,6 +2,8 @@ package com.mango.blog.Post;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mango.blog.Comment.Comment;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jdk.jfr.DataAmount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,13 +18,15 @@ public class GeneralPost implements Post{
     public String postID = UUID.randomUUID().toString();
     public ArrayList<Comment> comments;
     public String author;
+    @NotBlank(message = "postName is required")
     public String postName;
-    public String postBody;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime createdOn = LocalDateTime.now();
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime editedOn = LocalDateTime.now();
+    @NotBlank(message = "text is required")
     public String text;
+    @NotBlank(message = "genre is required")
     public String genre;
 
     public GeneralPost(String postName, String text, String author, String genre) {
@@ -40,7 +44,6 @@ public class GeneralPost implements Post{
                 ", comments:" + comments +
                 ", author:'" + author + '\'' +
                 ", postName:'" + postName + '\'' +
-                ", postBody:'" + postBody + '\'' +
                 ", createdOn:" + createdOn +
                 ", editedOn:" + editedOn +
                 ", text:'" + text + '\'' +
@@ -48,30 +51,29 @@ public class GeneralPost implements Post{
                 '}';
     }
 
+    @Override
     public void setAuthor(String author) {
         this.author = author;
     }
-
+    @Override
     public void setPostName(String postName) {
         this.postName = postName;
     }
 
-    public void setPostBody(String postBody) {
-        this.postBody = postBody;
-    }
 
     public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;
     }
-
+    @Override
     public void setEditedOn(LocalDateTime editedOn) {
         this.editedOn = editedOn;
     }
 
+    @Override
     public void setText(String text) {
         this.text = text;
     }
-
+    @Override
     public void setGenre(String genre) {
         this.genre = genre;
     }
@@ -84,19 +86,16 @@ public class GeneralPost implements Post{
     public ArrayList<Comment> getComments() {
         return comments;
     }
-
+    @Override
     public String getAuthor() {
         return author;
     }
-
+    @Override
     public String getPostName() {
         return postName;
     }
 
-    public String getPostBody() {
-        return postBody;
-    }
-
+    @Override
     public LocalDateTime getCreatedOn() {
         return createdOn;
     }
@@ -105,19 +104,16 @@ public class GeneralPost implements Post{
         return editedOn;
     }
 
+    @Override
     public String getText() {
         return text;
     }
-
+    @Override
     public String getGenre() {
         return genre;
     }
 
-    @Override
-    public void createPost() {
-        // TODO Auto-generated method stub
 
-    }
 
     @Override 
     public void deletePost(){
