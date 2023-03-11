@@ -95,6 +95,15 @@ public class User {
         posts.add(post);
     }
 
+
+    public void deletePost(String postID, String postName, String text, String genre, String author){
+        for(Post post: this.posts){
+            if(post.getPostID() == postID){
+                posts.remove(post);
+            }
+        }
+    }
+
     public void updatePost(String postID, String postName, String text, String genre, String author) {
         for (Post post : posts) {
             if (post.getPostID().equals(postID)) {
@@ -136,5 +145,4 @@ public class User {
         }
         return false;
     }
-
 }

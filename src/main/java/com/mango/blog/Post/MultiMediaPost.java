@@ -4,7 +4,7 @@ import com.mango.blog.Comment.Comment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.UUID;
+
 
 public class MultiMediaPost implements Post{
     public String postID = null;
@@ -19,6 +19,10 @@ public class MultiMediaPost implements Post{
 
     public MultiMediaPost(String postName, String text, String author, String genre, String media) {
         comments = new ArrayList<>();
+    }
+    @Override
+    public String getPostID() {
+        return postID;
     }
 
     @Override
@@ -59,6 +63,12 @@ public class MultiMediaPost implements Post{
     public String getText() {
         return text;
     }
+
+    @Override 
+    public void deletePost(){
+
+    }
+
     @Override
     public String getGenre() {
         return genre;
@@ -67,5 +77,4 @@ public class MultiMediaPost implements Post{
     public String getAuthor() {
         return author;
     }
-
 }
