@@ -20,10 +20,6 @@ public class MultiMediaPost implements Post{
     public MultiMediaPost(String postName, String text, String author, String genre, String media) {
         comments = new ArrayList<>();
     }
-    @Override
-    public String getPostID() {
-        return postID;
-    }
 
     @Override
     public String getPostID() {
