@@ -13,11 +13,10 @@ public interface Post {
     public LocalDateTime editedOn = LocalDateTime.now();
 
 
-    public void createPost();
+
     public void deletePost();
     public String getPostID();
 
-    public String getPostID();
     public LocalDateTime getCreatedOn();
 
     void setPostName(String postName);
