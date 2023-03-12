@@ -24,7 +24,7 @@ public class User {
     private String userPassword;
     private String email;
     private ArrayList<Post> posts = new ArrayList<Post>();
-    private HashMap<String, ArrayList<User>> userGroups;
+    private HashMap<String, ArrayList<HashMap<String,String>>> userGroups;
     private ArrayList<HashMap<String, String>> favoritePosts = new ArrayList<>();
     @Transient
     private PostFactory postFactory;
@@ -33,7 +33,7 @@ public class User {
         this.userName = userName;
         this.userPassword = userPassword;
         this.email = email;
-        userGroups = new HashMap<String, ArrayList<User>>();
+        this.userGroups = new HashMap<>();
         postFactory = new PostFactory();
     }
 
@@ -77,11 +77,11 @@ public class User {
         this.posts = posts;
     }
 
-    public HashMap<String, ArrayList<User>> getUserGroups() {
+    public HashMap<String, ArrayList<HashMap<String, String>>> getUserGroups() {
         return userGroups;
     }
 
-    public void setUserGroups(HashMap<String, ArrayList<User>> userGroups) {
+    public void setUserGroups(HashMap<String, ArrayList<HashMap<String, String>>> userGroups) {
         this.userGroups = userGroups;
     }
 
@@ -142,6 +142,27 @@ public class User {
             if (favoritePost.containsKey(postID)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean removeUserFromGroup(String groupName, String userToRemove) {
+        if (userGroups.containsKey(groupName)) {
+            ArrayList<HashMap<String, String>> users = userGroups.get(groupName);
+            for (HashMap<String, String> user : users) {
+                if (user.containsValue(userToRemove)) {
+                    users.remove(user);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean removeGroup(String groupName) {
+        if (userGroups.containsKey(groupName)) {
+            userGroups.remove(groupName);
+            return true;
         }
         return false;
     }
