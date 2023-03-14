@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mango.blog.Repositiory.RegisterRepository;
+import com.mango.blog.Repositiory.UserRepository;
+import com.mango.blog.User.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
-@Document(collection = "AuthData")
+@Document(collection = "BlogData")
 public class Register implements  Authentication{
     @Id
     private String id;
@@ -27,54 +31,32 @@ public class Register implements  Authentication{
     private String userName;
     private String password;
     private String email;
-    private String phoneNumber;
     private Login login;
 
     @Autowired
-    private RegisterRepository registerRepository;
+    private UserRepository userRepository;
 
     public Register(){}
 
-    public Register(String id, String userName, String password, String email, String phoneNumber, Login login){
+    public Register(String id, String userName, String password, String email, Login login){
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.email = email;
-        this.phoneNumber = phoneNumber;
         this.login = login;
     }
 
-    // @GetMapping("/login1")
-    // public ResponseEntity LoginCheck1(@RequestBody Register register){
-    //     try{
-    //         List<Register> registerTable = registerRepository.findAll();
-    //         boolean isValid = false;
-    //         for (int i= 0; i < registerTable.size(); i++) {
-    //             if(register.userName.equals(registerTable.get(i).userName) && register.password.equals(registerTable.get(i).password)){
-    //                 System.out.println('w');
-    //                 isValid = true;
-    //                 break;
-    //             }
-    //         }
-    //         return new ResponseEntity<>(isValid, HttpStatus.FOUND);
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-        
-    // }
-
-
-
     @PostMapping("/register")
-    public ResponseEntity addABookToLibrary(@RequestBody Register register)
+    public ResponseEntity RegisterUser(@RequestParam String userName, @RequestParam String password, @RequestParam String email)
     {
         try
         {
-            Register createdRegister = registerRepository.save(new Register(register.getId(), register.getUserName(),
-                    register.getPassword(), register.getEmail(), register.getPhoneNumber(), register.getLogin()));
-            return new ResponseEntity<>(createdRegister, HttpStatus.CREATED);
+            //String id =  UUID.randomUUID().toString();
+
+            User user = new User(userName, password, email);
+            userRepository.save(user);
+
+            return new ResponseEntity<>("success", HttpStatus.CREATED);
         }
         catch (Exception e)
         {
@@ -118,14 +100,6 @@ public class Register implements  Authentication{
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public Login getLogin() {
         return login;
     }
@@ -133,15 +107,5 @@ public class Register implements  Authentication{
     public void setLogin(Login login) {
         this.login = login;
     }
-
-    public RegisterRepository getRegisterRepository() {
-        return registerRepository;
-    }
-
-    public void setRegisterRepository(RegisterRepository registerRepository) {
-        this.registerRepository = registerRepository;
-    }
-
-
 
 }
