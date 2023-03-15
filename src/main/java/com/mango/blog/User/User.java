@@ -29,6 +29,8 @@ public class User {
     @Transient
     private PostFactory postFactory;
 
+    public User(){}
+
     public User(String userName, String userPassword, String email) {
         this.userName = userName;
         this.userPassword = userPassword;
