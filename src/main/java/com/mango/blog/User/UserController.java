@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/User/FavoritePost")
-    public ResponseEntity addFavoritePost(@Valid @RequestBody Map<String, String> body){
+    public ResponseEntity<String> addFavoritePost(@Valid @RequestBody Map<String, String> body){
         if (!body.containsKey("username")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing username");
         }
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @DeleteMapping("/User/RemoveFavoritePost")
-    public ResponseEntity removeFavoritePost(@Valid @RequestBody Map<String, String> body){
+    public ResponseEntity<String> removeFavoritePost(@Valid @RequestBody Map<String, String> body){
         if (!body.containsKey("username")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
         }
@@ -89,6 +89,77 @@ public class UserController {
             System.out.println(e);
             return "Error";
         }
+    }
+
+    @GetMapping("/User/Groups")
+    public ResponseEntity<String> getGroups(@Valid @RequestParam String username){
+        if (username == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+        }
+        User user = repo.findByUserName(username);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        try{
+            HashMap<String, ArrayList<HashMap<String,String>>> groups = user.getUserGroups();
+            ArrayList<String> groupNames = new ArrayList<>();
+            for (String keys: groups.keySet()) {
+                groupNames.add(keys);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            String json = mapper.writeValueAsString(groupNames);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+        }catch (Exception e){
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
+        }
+    }
+
+    @PutMapping("/User/RemoveUserFromGroup")
+    public ResponseEntity<String> removeUserFromGroup(@Valid @RequestBody Map<String, String> body){
+        if (!body.containsKey("username")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+        }
+        if (!body.containsKey("groupName")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
+        }
+        if (!body.containsKey("userToRemove")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User to remove is required");
+        }
+        String username = body.get("username");
+        String groupName = body.get("groupName");
+        String userToRemove = body.get("userToRemove");
+        User user = repo.findByUserName(username);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        if (!user.removeUserFromGroup(groupName, userToRemove)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found or user not in group");
+        }
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("User removed from group");
+    }
+
+    @PutMapping("/User/RemoveGroup")
+    public ResponseEntity<String> removeGroup(@Valid @RequestBody Map<String, String> body){
+        if (!body.containsKey("username")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+        }
+        if (!body.containsKey("groupName")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
+        }
+        String username = body.get("username");
+        String groupName = body.get("groupName");
+        User user = repo.findByUserName(username);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        if (!user.removeGroup(groupName)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
+        }
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("Group removed");
     }
 
 }

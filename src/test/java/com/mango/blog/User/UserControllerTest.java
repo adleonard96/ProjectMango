@@ -125,4 +125,19 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
 
     }
+
+    @Test
+    void getGroups() {
+        // TODO: Implement getGroups() test after create group method is implemented
+    }
+
+    @Test
+    void removeUserFromGroup() {
+        // TODO: Implement removeUserFromGroup() test after create group method is implemented
+    }
+
+    @Test
+    void removeGroup() {
+        // TODO: Implement removeGroup() test after create group method is implemented
+    }
 }
