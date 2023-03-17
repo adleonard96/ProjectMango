@@ -29,6 +29,8 @@ public class GeneralPost implements Post{
     @NotBlank(message = "genre is required")
     public String genre;
 
+    public GeneralPost(){}
+
     public GeneralPost(String postName, String text, String author, String genre) {
         this.postName = postName;
         this.text = text;
@@ -83,9 +85,15 @@ public class GeneralPost implements Post{
         return postID;
     }
 
+    @Override
     public ArrayList<Comment> getComments() {
         return comments;
     }
+
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+    }
+
     @Override
     public String getAuthor() {
         return author;
@@ -119,6 +127,8 @@ public class GeneralPost implements Post{
     public void deletePost(){
     }
 
+    public void createComment(){
 
+    }
 
 }

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mango.blog.Comment.Comment;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 
@@ -31,6 +32,19 @@ public class PostController {
 
     public PostController(UserRepository repo) {
         this.repo = repo;
+
+    }
+
+    @PostMapping("/Comment/Create")
+    public ResponseEntity CreateComment(@RequestParam String userName, @RequestParam String postID, @RequestParam String text) {
+        User user = repo.findByUserName(userName);
+        Comment comment = new Comment(user, text);
+        System.out.println(comment.getCommentID());
+        user.getPosts().get(0).getComments().add(comment);
+        System.out.println(user.getPosts().get(0));
+        
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Comment Created");
 
     }
 
