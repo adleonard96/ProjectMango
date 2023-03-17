@@ -27,6 +27,16 @@ public class MultiMediaPost implements Post{
     }
 
     @Override
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+    }
+
+    @Override
     public LocalDateTime getCreatedOn() {
         return createdOn;
     }

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.mango.blog.Comment.*;
+
 @Data
 @AllArgsConstructor
 @Document(collection = "BlogData")
@@ -28,6 +30,7 @@ public class User {
     private ArrayList<HashMap<String, String>> favoritePosts = new ArrayList<>();
     @Transient
     private PostFactory postFactory;
+
 
     public User(){}
 
@@ -168,4 +171,16 @@ public class User {
         }
         return false;
     }
+
+    public void addComment(String postID, Comment comment){
+
+        for (int i = 0; i < this.posts.size(); i++) {
+            if (this.posts.get(i).getPostID().equals(postID)) {
+                this.posts.get(i).addComment(comment);
+            }
+        }
+    }
+
 }
+
+
