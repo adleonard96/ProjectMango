@@ -63,6 +63,9 @@ public class UserController {
         String username = body.get("username");
         String postID = body.get("postID");
         User user = repo.findByUserName(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
         if (!user.unfavoritePost(postID)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
         }
