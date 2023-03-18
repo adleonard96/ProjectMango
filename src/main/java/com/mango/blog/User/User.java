@@ -170,4 +170,35 @@ public class User {
         }
         return false;
     }
+    public boolean addGroup(String groupName) {
+        if (!userGroups.containsKey(groupName)) {
+            userGroups.put(groupName, new ArrayList<>());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addUserToGroup(String groupName, String userToAddID, String userToAdd) {
+        if (userGroups.containsKey(groupName)) {
+            ArrayList<HashMap<String, String>> users = userGroups.get(groupName);
+            for(HashMap<String, String> user: users){
+                if(user.containsValue(userToAdd)){
+                    return false;
+                }
+            }
+            HashMap<String, String> user = new HashMap<>();
+            user.put(userToAddID, userToAdd);
+            users.add(user);
+            return true;
+        }
+        return false;
+
+    }
+
+    public ArrayList<HashMap<String, String>> getUsersInGroup(String groupName) {
+        if (userGroups.containsKey(groupName)) {
+            return userGroups.get(groupName);
+        }
+        return null;
+    }
 }

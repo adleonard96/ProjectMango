@@ -183,4 +183,81 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
+
+    @PostMapping("/User/Group")
+    public ResponseEntity<String> createGroup(@RequestBody Map<String, String> body) {
+        if (!body.containsKey("username")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+        }
+        if (!body.containsKey("groupName")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
+        }
+        String username = body.get("username");
+        String groupName = body.get("groupName");
+        User user = repo.findByUserName(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (!user.addGroup(groupName)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group already exists");
+        }
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Group created");
+    }
+
+    @PutMapping("/User/Group")
+    public ResponseEntity<String> addUserToGroup(@RequestBody Map<String, String> body) {
+        if (!body.containsKey("username")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+        }
+        if (!body.containsKey("groupName")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
+        }
+        if (!body.containsKey("userToAdd")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User to add is required");
+        }
+        String username = body.get("username");
+        String groupName = body.get("groupName");
+        String userToAdd = body.get("userToAdd");
+        User user = repo.findByUserName(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        User userToAddObj = repo.findByUserName(userToAdd);
+        if (userToAddObj == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User to add not found");
+        }
+        if (!user.addUserToGroup(groupName, userToAddObj.getUserID() ,userToAdd)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
+        }
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("User added to group");
+    }
+
+    @GetMapping("/User/Group")
+    public ResponseEntity<String> getUsersInGroup(@RequestParam String username, @RequestParam String groupName) {
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+        }
+        if (groupName == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
+        }
+        User user = repo.findByUserName(username);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        try {
+            ArrayList<HashMap<String, String>> users = user.getUsersInGroup(groupName);
+            if (users == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group not found");
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            String json = mapper.writeValueAsString(users);
+            return ResponseEntity.status(HttpStatus.OK).body(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
