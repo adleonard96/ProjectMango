@@ -1,5 +1,6 @@
 package com.mango.blog.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mango.blog.Post.Post;
 import com.mango.blog.Post.PostFactory;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"postFactory", "userPassword"})
 @Document(collection = "BlogData")
 public class User {
     @Id
