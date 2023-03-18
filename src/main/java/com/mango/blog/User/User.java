@@ -42,6 +42,14 @@ public class User {
         postFactory = new PostFactory();
     }
 
+    public User(String userName, String userPassword, String email, HashMap<String, ArrayList<HashMap<String, String>>> userGroups) {
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.email = email;
+        this.userGroups = userGroups;
+        postFactory = new PostFactory();
+    }
+
     public String getUserID() {
         return userID;
     }
@@ -96,6 +104,9 @@ public class User {
     }
 
     public void createPost(String postName, String text, String author, String genre) {
+        if (postFactory == null) {
+            postFactory = new PostFactory();
+        }
         Post post = postFactory.createPost(postName, text, author ,genre);
         posts.add(post);
     }
@@ -172,15 +183,16 @@ public class User {
         return false;
     }
 
-    public void addComment(String postID, Comment comment){
+    public boolean addComment(String postID, Comment comment){
 
         for (int i = 0; i < this.posts.size(); i++) {
             if (this.posts.get(i).getPostID().equals(postID)) {
                 this.posts.get(i).addComment(comment);
+                return true;
             }
         }
+        return false;
     }
-
 }
 
 

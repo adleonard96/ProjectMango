@@ -38,7 +38,7 @@ public class PostController {
     @PostMapping("/Comment/Create")
     public ResponseEntity CreateComment(@RequestParam String userName, @RequestParam String postID, @RequestParam String text) {
         User user = repo.findByUserName(userName);
-        Comment comment = new Comment(user, text);
+        Comment comment = new Comment(user.getUserName(), text);
         System.out.println(comment.getCommentID());
         user.getPosts().get(0).getComments().add(comment);
         System.out.println(user.getPosts().get(0));
@@ -53,7 +53,7 @@ public class PostController {
     public ResponseEntity createGenericPostPost(@Valid @RequestBody GeneralPost post){
         // Get the user from the database
         User user = repo.findByUserName(post.getAuthor());
-        user.createPost(post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
+        user.createPost(post.getPostName(), post.getText(), post.getAuthor(), post.getGenre());
         // Save the user to the database
         repo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");

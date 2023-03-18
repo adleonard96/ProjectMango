@@ -1,19 +1,22 @@
 package com.mango.blog.Post;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mango.blog.Comment.Comment;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jdk.jfr.DataAmount;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.PersistenceCreator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"comments", "createdOn", "editedOn"})
 public class GeneralPost implements Post{
     public String postID = UUID.randomUUID().toString();
     public ArrayList<Comment> comments;
@@ -29,8 +32,16 @@ public class GeneralPost implements Post{
     @NotBlank(message = "genre is required")
     public String genre;
 
-    public GeneralPost(){}
+    public GeneralPost(@JsonProperty("postID") String postID, @JsonProperty("comments")ArrayList<Comment> comments,@JsonProperty("author") String author,@JsonProperty("postName") String postName ,@JsonProperty("text") String text,@JsonProperty("genre") String genre) {
+        this.postID = postID;
+        this.comments = comments;
+        this.author = author;
+        this.postName = postName;
+        this.text = text;
+        this.genre = genre;
+    }
 
+    @PersistenceCreator
     public GeneralPost(String postName, String text, String author, String genre) {
         this.postName = postName;
         this.text = text;
