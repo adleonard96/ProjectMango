@@ -7,15 +7,15 @@ import java.util.UUID;
 import java.util.ArrayList;
 
 public class Comment {
-    private User user;
+    private String commentAuthor;
     private String commentID;
     private LocalDateTime createdOn;
     private LocalDateTime editedOn;
     private String text;
     private ArrayList<Comment> replies = new ArrayList<Comment>();
 
-    public Comment(User user, String text){
-        this.user = user;
+    public Comment(String commentAuthor, String text){
+        this.commentAuthor = commentAuthor;
         this.commentID = UUID.randomUUID().toString();
         this.createdOn = LocalDateTime.now();
         this.editedOn = null;
@@ -23,12 +23,12 @@ public class Comment {
         this.replies = new ArrayList<Comment>();
     }
 
-    public User getUser() {
-        return user;
+    public String getUser() {
+        return commentAuthor;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(String user) {
+        this.commentAuthor = user;
     }
 
     public String getCommentID() {

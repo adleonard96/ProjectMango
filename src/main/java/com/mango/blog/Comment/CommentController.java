@@ -1,5 +1,6 @@
 package com.mango.blog.Comment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
@@ -19,10 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
-import java.util.UUID;
 import java.time.LocalDateTime;
 
 import com.mango.blog.Post.PostController;
@@ -55,7 +54,37 @@ public class CommentController {
     //     //                 Aggregates.replaceRoot("$posts"),
     //     //                 Aggregates.match(Filters.eq("postID", postID))));
     //     // String userName = posts.first().get("author").toString(); // get username
+    @PostMapping("/Comment")
+    public ResponseEntity createComment(@RequestBody Map<String, String> body) throws JsonProcessingException {
+        if (!body.containsKey("postID")) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PostID not found");
+        }
+        if (!body.containsKey("text")) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Text not found");
+        }
+        if (!body.containsKey("userName")) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Username not found");
+        }
+        User commentUser = repo.findByUserName(body.get("userName"));
+        if (commentUser == null) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("User not found");
+        }
+        String post = repo.getPostsById(body.get("postID"));
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Post not found");
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
 
+        GeneralPost postObj = mapper.readValue(post, GeneralPost.class);
+        Comment comment = new Comment(commentUser.getUserName(), body.get("text"));
+        User postAuthor = repo.findByUserName(postObj.getAuthor());
+        if(!postAuthor.addComment(postObj.getPostID(), comment)){
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Comment not added to post");
+        }
+        repo.save(postAuthor);
+        return ResponseEntity.status(HttpStatus.OK).body("Comment created");
+    }
     
 
 
