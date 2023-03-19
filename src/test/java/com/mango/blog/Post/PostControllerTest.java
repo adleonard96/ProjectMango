@@ -68,9 +68,23 @@ public class PostControllerTest {
 
         assert user.getPosts().size() == 1;
     }
+    @Test
+    void deleteGenericPostPost() throws Expection { //def didn't use mockito right here
+        user.createPost("Test", "This is a test post", "TestingUser", "Baking");
+        Post test = user.getPosts().get(0);
+        String postID = test.getPostID();
+
+        user.deletePost(postID, "Test", "This is a test post", "Baking", "TestingUser"); //Correctly grab postID
+
+        assert user.getPosts().size() == 0;
+    }
 
     @Test
     void getGenericPost() {
+        user.createPost("Test", "This is a test post", "TestingUser", "Baking");
+        Post post = user.getPosts().get(0);
+
+        assert post != null;
     }
 
     @Test

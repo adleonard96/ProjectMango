@@ -238,6 +238,12 @@ public class User {
         }
         return null;
     }
+    public ArrayList<HashMap<String, String>> getUserGroups(String groupName) {
+        if (userGroups.containsKey(groupName)) {
+            return userGroups.get(groupName);
+        }
+        return null;
+    }
 }
 
 
