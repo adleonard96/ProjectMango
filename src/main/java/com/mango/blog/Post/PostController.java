@@ -35,19 +35,6 @@ public class PostController {
 
     }
 
-    @PostMapping("/Comment/Create")
-    public ResponseEntity CreateComment(@RequestParam String userName, @RequestParam String postID, @RequestParam String text) {
-        User user = repo.findByUserName(userName);
-        Comment comment = new Comment(user.getUserName(), text);
-        System.out.println(comment.getCommentID());
-        user.getPosts().get(0).getComments().add(comment);
-        System.out.println(user.getPosts().get(0));
-        
-        repo.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Comment Created");
-
-    }
-
     // TODO - Get the username from the current signed in user instead of the body
     @PostMapping("Posts/GeneralPost")
     public ResponseEntity createGenericPostPost(@Valid @RequestBody GeneralPost post){
