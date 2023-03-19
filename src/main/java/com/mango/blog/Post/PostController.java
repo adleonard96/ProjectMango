@@ -37,6 +37,18 @@ public class PostController {
     @PostMapping("Posts/GeneralPost")
     public ResponseEntity<String> createGenericPostPost(@Valid @RequestBody GeneralPost post){
         // Get the user from the database
+        if (post.getAuthor() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        }
+        if (post.getPostName() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post Name is null");
+        }
+        if (post.getText() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Text is null");
+        }
+        if (post.getGenre() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Genre is null");
+        }
         User user = repo.findByUserName(post.getAuthor());
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
