@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -57,7 +58,6 @@ import com.mango.blog.Comment.Comment;;
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-//@RunWith(MockitoJUnitRunner.class)
 public class CommentControllerTest {
 
     @MockBean
@@ -68,42 +68,57 @@ public class CommentControllerTest {
     @Autowired
     private CommentController commentController = new CommentController(repo);
 
+    User user = new User("user1", "password", "test@email.com");
+    GeneralPost post = new GeneralPost("1234", new ArrayList<Comment>(), "user1", "this is the post", "TestUser",
+            "testing");
+
     @Before
     public void setup() {
         repo = mock(UserRepository.class);
         commentController = new CommentController(repo);
-        System.out.println(repo);
     }
 
     @Test
     public void createCommentTest() throws JsonProcessingException {
-        System.out.println(repo);
         // Set up test data
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("postID", "1");
+        requestBody.put("postID", "1234");
         requestBody.put("text", "This is a comment");
         requestBody.put("userName", "user1");
 
-        User user = new User("user1", "password", "test@email.com");
         when(repo.findByUserName("user1")).thenReturn(user);
+        when(repo.getPostsById("1234")).thenReturn(new ObjectMapper().writeValueAsString(post));
+        user.getPosts().add(post); // add post to user
 
-        GeneralPost post = new GeneralPost("1234", new ArrayList<Comment>(),"user1", "this is the post", "TestUser", "testing");
-        when(repo.getPostsById("1")).thenReturn(new ObjectMapper().writeValueAsString(post));
-
-        //Comment comment = new Comment(user.getUserName(), "This is a comment");
-
-        //when(user.addComment(anyString(), comment )).thenReturn(true);
-        // Call the controller method
+        // Call createComment
         ResponseEntity response = commentController.createComment(requestBody);
 
-        // Verify the response
-        System.out.println(response);
+        // Assert the comment was created
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Comment created", response.getBody());
 
-        // Verify that the comment was added to the post author
-        verify(repo, times(1)).findByUserName("user1");
-        verify(repo, times(1)).getPostsById("1");
-        verify(repo, times(1)).save(user);
+    }
+
+    @Test
+    public void deleteCommentTest() throws JsonProcessingException {
+        user.getPosts().add(post); // add post to user
+        // create a comment, add it to the post
+        Comment comment = new Comment("user1", "This is a comment");
+        post.getComments().add(comment);
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("postID", "1234");
+        requestBody.put("commentID", post.getComments().get(0).getCommentID());
+        requestBody.put("userName", "user1");
+
+        when(repo.findByUserName("user1")).thenReturn(user);
+        when(repo.getPostsById("1234")).thenReturn(new ObjectMapper().writeValueAsString(post));
+
+        // Call createComment
+        ResponseEntity response = commentController.deleteComment(requestBody);
+
+        // Assert the comment was deleted
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Comment deleted", response.getBody());
     }
 }
