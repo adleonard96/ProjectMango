@@ -54,7 +54,7 @@ public class CommentController {
         if (!body.containsKey("userName")) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Username not found");
         }
-        
+
         User commentUser = repo.findByUserName(body.get("userName"));
         if (commentUser == null) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("User not found");
@@ -63,7 +63,6 @@ public class CommentController {
         if (post == null) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Post not found");
         }
-        //System.out.println("\n\n\n\n" + post + "\n\n\n\n");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -77,7 +76,6 @@ public class CommentController {
         repo.save(postAuthor);
         return ResponseEntity.status(HttpStatus.OK).body("Comment created");
     }
-
 
     @DeleteMapping("/Comment")
     public ResponseEntity deleteComment(@RequestBody Map<String, String> body) throws JsonProcessingException{
@@ -113,6 +111,5 @@ public class CommentController {
         repo.save(postAuthor);
         return ResponseEntity.status(HttpStatus.OK).body("Comment deleted");
     }
-
 
 }

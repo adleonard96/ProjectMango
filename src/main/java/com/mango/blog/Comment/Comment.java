@@ -24,11 +24,13 @@ public class Comment {
         this.replies = new ArrayList<Comment>();
     }
 
+
     // public Comment(UserRepository repo){
     //     this.userRepository = repo;
     // }
 
     public Comment(){}
+
 
     public String getUser() {
         return commentAuthor;
