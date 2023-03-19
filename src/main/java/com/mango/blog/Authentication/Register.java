@@ -7,7 +7,11 @@ import com.mango.blog.Repositiory.RegisterRepository;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +55,21 @@ public class Register implements  Authentication{
     {
         try
         {
-            //String id =  UUID.randomUUID().toString();
+            User checkUser = userRepository.findByUserName(userName);
+            if(checkUser != null)
+            {
+                return new ResponseEntity<>("User already exists", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            SecureRandom random = new SecureRandom();
+            byte[] salt = new byte[12];
+            random.nextBytes(salt);
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt);
+            byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            Base64.Encoder encoder = Base64.getEncoder();
+            String encodedSalt = encoder.encodeToString(salt);
+            String encodedHashedPassword = encoder.encodeToString(hashedPassword);
+            password = encodedSalt + encodedHashedPassword;
 
             User user = new User(userName, password, email);
             userRepository.save(user);
