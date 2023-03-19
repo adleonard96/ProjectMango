@@ -66,7 +66,9 @@ public class PostController {
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
-        user.deletePost(post.getPostID(),post.getPostName(), post.getText(), post.getGenre(), post.getAuthor()); //sending the post to the chopping block
+        if (!user.deletePost(post.getPostID(),post.getPostName(), post.getText(), post.getGenre(), post.getAuthor())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
+        } //sending the post to the chopping block
         repo.save(user); //save new user
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Deleted");
     }

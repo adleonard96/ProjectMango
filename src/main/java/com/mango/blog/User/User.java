@@ -114,12 +114,14 @@ public class User {
     }
 
 
-    public void deletePost(String postID, String postName, String text, String genre, String author){
+    public boolean deletePost(String postID, String postName, String text, String genre, String author){
         for(Post post: this.posts){
-            if(post.getPostID() == postID){
+            if(post.getPostID().equals(postID)){
                 posts.remove(post);
+                return true;
             }
         }
+        return false;
     }
 
     public void updatePost(String postID, String postName, String text, String genre, String author) {

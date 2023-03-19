@@ -127,7 +127,7 @@ class UserControllerTest {
     }
 
     @Test
-    void addUserInGroup(){
+    void addUserInGroup() throws Exception {
         user.addGroup("Baking");
         user.addUserToGroup("Baking", user2.getUserID(), user2.getUserName());
 
@@ -142,7 +142,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserInGroups() {
+    void getUserInGroups() throws Exception {
         user.addGroup("Baking");
         user.addUserToGroup("Baking", user2.getUserID(), user2.getUserName());
 
@@ -160,7 +160,7 @@ class UserControllerTest {
     }
 
     @Test
-    void removeUserFromGroup() {
+    void removeUserFromGroup() throws Exception {
         user.addGroup("Business");
         user.addUserToGroup("Business", user2.getUserID(), user2.getUserName());
         user.removeUserFromGroup("Business", user2.getUserName());
