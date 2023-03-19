@@ -209,7 +209,6 @@ public class User {
     public boolean removeComment(String postID, String commentID){
         for(int i = 0; i < this.posts.size(); i++){
             if(this.posts.get(i).getPostID().equals(postID)){
-
                 for(int j = 0; j < this.posts.get(i).getComments().size(); j++){
                     if(this.posts.get(i).getComments().get(j).getCommentID().equals(commentID)){
                         this.posts.get(i).getComments().remove(j);
