@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.mango.blog.Comment.*;
+
 @Data
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"postFactory", "userPassword"})
@@ -31,6 +33,7 @@ public class User {
     @Transient
     private PostFactory postFactory;
 
+
     public User(){}
 
     public User(String userName, String userPassword, String email) {
@@ -38,6 +41,14 @@ public class User {
         this.userPassword = userPassword;
         this.email = email;
         this.userGroups = new HashMap<>();
+        postFactory = new PostFactory();
+    }
+
+    public User(String userName, String userPassword, String email, HashMap<String, ArrayList<HashMap<String, String>>> userGroups) {
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.email = email;
+        this.userGroups = userGroups;
         postFactory = new PostFactory();
     }
 
@@ -95,6 +106,9 @@ public class User {
     }
 
     public void createPost(String postName, String text, String author, String genre) {
+        if (postFactory == null) {
+            postFactory = new PostFactory();
+        }
         Post post = postFactory.createPost(postName, text, author ,genre);
         posts.add(post);
     }
@@ -170,10 +184,33 @@ public class User {
         }
         return false;
     }
+
+    public boolean addComment(String postID, Comment comment){
+        for (int i = 0; i < this.posts.size(); i++) {
+            if (this.posts.get(i).getPostID().equals(postID)) {
+                this.posts.get(i).addComment(comment);
+                return true;
+            }
     public boolean addGroup(String groupName) {
         if (!userGroups.containsKey(groupName)) {
             userGroups.put(groupName, new ArrayList<>());
             return true;
+        }
+        return false;
+    }
+
+
+    public boolean removeComment(String postID, String commentID){
+        for(int i = 0; i < this.posts.size(); i++){
+            if(this.posts.get(i).getPostID().equals(postID)){
+
+                for(int j = 0; j < this.posts.get(i).getComments().size(); j++){
+                    if(this.posts.get(i).getComments().get(j).getCommentID().equals(commentID)){
+                        this.posts.get(i).getComments().remove(j);
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
@@ -202,3 +239,5 @@ public class User {
         return null;
     }
 }
+
+

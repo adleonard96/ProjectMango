@@ -1,5 +1,6 @@
 package com.mango.blog.Comment;
 
+import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,14 @@ public class Comment {
         this.text = text;
         this.replies = new ArrayList<Comment>();
     }
+
+
+    // public Comment(UserRepository repo){
+    //     this.userRepository = repo;
+    // }
+
+    public Comment(){}
+
 
     public String getUser() {
         return commentAuthor;

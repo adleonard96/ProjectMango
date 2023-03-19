@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mango.blog.Comment.Comment;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 
@@ -50,6 +51,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Genre is null");
         }
         User user = repo.findByUserName(post.getAuthor());
+
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
