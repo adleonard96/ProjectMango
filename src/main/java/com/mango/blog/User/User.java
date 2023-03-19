@@ -184,7 +184,6 @@ public class User {
     }
 
     public boolean addComment(String postID, Comment comment){
-
         for (int i = 0; i < this.posts.size(); i++) {
             if (this.posts.get(i).getPostID().equals(postID)) {
                 this.posts.get(i).addComment(comment);
@@ -193,6 +192,22 @@ public class User {
         }
         return false;
     }
+
+    public boolean removeComment(String postID, String commentID){
+        for(int i = 0; i < this.posts.size(); i++){
+            if(this.posts.get(i).getPostID().equals(postID)){
+
+                for(int j = 0; j < this.posts.get(i).getComments().size(); j++){
+                    if(this.posts.get(i).getComments().get(j).getCommentID().equals(commentID)){
+                        this.posts.get(i).getComments().remove(j);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }
 
 
