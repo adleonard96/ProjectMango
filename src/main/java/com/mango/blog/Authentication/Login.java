@@ -8,7 +8,12 @@ import com.mango.blog.Repositiory.RegisterRepository;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +49,7 @@ public class Login implements Authentication {
     }
 
     @PostMapping("/login")
-    public ResponseEntity LoginUser(@RequestParam String userName, @RequestParam String password) {
+    public ResponseEntity LoginUser(@RequestParam String userName, @RequestParam String password) throws NoSuchAlgorithmException {
 
         boolean isValid = false;
         String error = null;
@@ -59,7 +64,16 @@ public class Login implements Authentication {
             return new ResponseEntity<>("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (tempUser.getUserPassword().equals(password)) {
+        String storedPass = tempUser.getUserPassword();
+        Base64.Decoder decoder = Base64.getDecoder();
+        String salt = storedPass.substring(0, 16);
+        byte[] decodedSalt = decoder.decode(salt);
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        Base64.Encoder encoder = Base64.getEncoder();
+        md.update(decodedSalt);
+        byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
+        String hashedPass = salt + encoder.encodeToString(hashedPassword);
+        if (storedPass.equals(hashedPass)) {
             isValid = true;
         } else {
             error = "Incorrect password";
