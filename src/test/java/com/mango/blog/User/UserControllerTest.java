@@ -127,17 +127,61 @@ class UserControllerTest {
     }
 
     @Test
-    void getGroups() {
-        // TODO: Implement getGroups() test after create group method is implemented
+    void addUserInGroup(){
+        user.addGroup("Baking");
+        user.addUserToGroup("Baking", user2.getUserID(), user2.getUserName());
+
+
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        mvc.perform(MockMvcRequestBuilders.get("/User/UserGroups")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("username", "TestUser"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
+
+    }
+
+    @Test
+    void getUserInGroups() {
+        user.addGroup("Baking");
+        user.addUserToGroup("Baking", user2.getUserID(), user2.getUserName());
+
+        user.getUsersInGroup("Baking");
+
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        mvc.perform(MockMvcRequestBuilders.get("/User/UserGroups")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("username", "TestUser2"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
+
+        assert user.getUsersInGroup("Baking").size() == 1;
+
     }
 
     @Test
     void removeUserFromGroup() {
-        // TODO: Implement removeUserFromGroup() test after create group method is implemented
+        user.addGroup("Business");
+        user.addUserToGroup("Business", user2.getUserID(), user2.getUserName());
+        user.removeUserFromGroup("Business", user2.getUserName());
+
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        mvc.perform(MockMvcRequestBuilders.get("/User/UserGroups")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("username", "TestUser"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
+
+        assert user.getUsersInGroup("Business").size() == 0;
     }
 
     @Test
     void removeGroup() {
         // TODO: Implement removeGroup() test after create group method is implemented
+        user.addGroup("Sports");
+        user.removeGroup("Sports");
+
+        assert user.getUserGroups("Sports").size()==0; //I'm hunting for getting the actual user groups but
     }
+
 }
