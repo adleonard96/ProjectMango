@@ -191,6 +191,10 @@ public class User {
                 this.posts.get(i).addComment(comment);
                 return true;
             }
+        }
+        return false;
+    }
+        
     public boolean addGroup(String groupName) {
         if (!userGroups.containsKey(groupName)) {
             userGroups.put(groupName, new ArrayList<>());
