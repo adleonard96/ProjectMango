@@ -34,4 +34,7 @@ public interface Post {
     String getText();
     String getGenre();
     String getAuthor();
-}
+
+    ArrayList<Comment> getComments();
+    void addComment(Comment comment);
+}   
