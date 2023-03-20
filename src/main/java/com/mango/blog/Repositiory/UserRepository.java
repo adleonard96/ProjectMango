@@ -122,4 +122,23 @@ public interface UserRepository extends MongoRepository<User, String>{
         }
         return json.toString();
     };
+
+    public default String getAllPostsByUser(String userName){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
+        MongoDatabase database = mongoClient.getDatabase("MangoDB");
+        MongoCollection<Document> collection = database.getCollection("BlogData");
+        AggregateIterable<Document> posts;
+        posts = collection.aggregate(
+                Arrays.asList(
+                        Aggregates.unwind("$posts"),
+                        Aggregates.replaceRoot("$posts"),
+                        Aggregates.match(Filters.eq("author", userName))
+                )
+        );
+        ArrayList<String> json = new ArrayList<>();
+        for(Document post : posts){
+            json.add(post.toJson());
+        }
+        return json.toString();
+    }
 }
