@@ -104,9 +104,6 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         assert user2.getFavoritePosts().size() == 0;
-
-
-
     }
 
     @Test
@@ -125,19 +122,68 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
 
     }
-
     @Test
-    void getGroups() {
-        // TODO: Implement getGroups() test after create group method is implemented
+    void addUserGroup() throws Exception {
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
+
+        mvc.perform(MockMvcRequestBuilders.post("/User/Group")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validBody))
+                .andExpect(status().isCreated());
+
+        assert user.getGroups().size() == 1;
+
+    }
+    @Test
+    void getGroups() throws Exception {
+        user.addGroup("TestGroup");
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        mvc.perform(MockMvcRequestBuilders.get("/User/Groups")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("username", "TestUser"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+
     }
 
     @Test
-    void removeUserFromGroup() {
-        // TODO: Implement removeUserFromGroup() test after create group method is implemented
+    void removeUserFromGroup() throws Exception {
+        user.addGroup("TestGroup");
+        user.addUserToGroup("TestGroup", "15", user2.getUserName());
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\",\"userToRemove\":\"" + user2.getUserName() + "\"}";
+
+        mvc.perform((MockMvcRequestBuilders.put("/User/RemoveUserFromGroup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validBody)))
+                .andExpect(status().isOk());
+
     }
 
     @Test
-    void removeGroup() {
-        // TODO: Implement removeGroup() test after create group method is implemented
+    void removeGroup() throws Exception {
+        user.addGroup("TestGroup");
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+
+        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
+        assert user.getGroups().size() == 1;
+
+        mvc.perform((MockMvcRequestBuilders.delete("/User/RemoveGroup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validBody)))
+                .andExpect(status().isOk());
+
+        assert user.getGroups().size() == 0;
+    }
+
+    @Test
+    void getUserDetails() {
+        // TODO
+    }
+
+    @Test
+    void getUsersInGroup() {
+        // TODO
     }
 }

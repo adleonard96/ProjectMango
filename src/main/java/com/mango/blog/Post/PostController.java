@@ -99,18 +99,7 @@ public class PostController {
         if (postID == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
         }
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
-        MongoDatabase database = mongoClient.getDatabase("MangoDB");
-        MongoCollection<Document> collection = database.getCollection("BlogData");
-        AggregateIterable<Document> posts;
-        posts = collection.aggregate(
-                Arrays.asList(
-                        Aggregates.unwind("$posts"),
-                        Aggregates.replaceRoot("$posts"),
-                        Aggregates.match(Filters.eq("postID", postID))
-                )
-        );
-        String json = posts.first().toJson();
+        String json = repo.getPostsById(postID);
         return ResponseEntity.status(HttpStatus.OK).body(json);
     }
     
