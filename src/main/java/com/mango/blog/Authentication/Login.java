@@ -61,7 +61,7 @@ public class Login implements Authentication {
         }
         if (tempUser == null) {
             error = "User not found";
-            return new ResponseEntity<>("User not found", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
         String storedPass = tempUser.getUserPassword();
