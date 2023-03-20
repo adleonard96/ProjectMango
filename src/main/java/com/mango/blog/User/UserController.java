@@ -145,7 +145,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("User removed from group");
     }
 
-    @PutMapping("/User/RemoveGroup")
+    @DeleteMapping("/User/RemoveGroup")
     public ResponseEntity<String> removeGroup(@Valid @RequestBody Map<String, String> body) {
         if (!body.containsKey("username")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");

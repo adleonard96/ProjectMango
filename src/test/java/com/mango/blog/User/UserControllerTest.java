@@ -1,18 +1,13 @@
 package com.mango.blog.User;
 
-import com.mango.blog.Post.PostController;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mango.blog.Repositiory.UserRepository;
-import com.mango.blog.User.User;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -22,15 +17,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.any;
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -104,9 +97,6 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         assert user2.getFavoritePosts().size() == 0;
-
-
-
     }
 
     @Test
@@ -125,19 +115,82 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
 
     }
-
     @Test
-    void getGroups() {
-        // TODO: Implement getGroups() test after create group method is implemented
+    void addUserGroup() throws Exception {
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
+
+        mvc.perform(MockMvcRequestBuilders.post("/User/Group")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validBody))
+                .andExpect(status().isCreated());
+
+        assert user.getGroups().size() == 1;
+
+    }
+    @Test
+    void getUserGroups() throws Exception {
+        user.addGroup("TestGroup");
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        mvc.perform(MockMvcRequestBuilders.get("/User/Groups")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("username", "TestUser"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+
     }
 
     @Test
-    void removeUserFromGroup() {
-        // TODO: Implement removeUserFromGroup() test after create group method is implemented
+    void removeUserFromGroup() throws Exception {
+        user.addGroup("TestGroup");
+        user.addUserToGroup("TestGroup", "15", user2.getUserName());
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\",\"userToRemove\":\"" + user2.getUserName() + "\"}";
+
+        mvc.perform((MockMvcRequestBuilders.put("/User/RemoveUserFromGroup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validBody)))
+                .andExpect(status().isOk());
+
     }
 
     @Test
-    void removeGroup() {
-        // TODO: Implement removeGroup() test after create group method is implemented
+    void removeGroup() throws Exception {
+        user.addGroup("TestGroup");
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+
+        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
+        assert user.getGroups().size() == 1;
+
+        mvc.perform((MockMvcRequestBuilders.delete("/User/RemoveGroup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(validBody)))
+                .andExpect(status().isOk());
+
+        assert user.getGroups().size() == 0;
+    }
+
+    @Test
+    void getUserDetails() throws Exception{
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+
+        mvc.perform(MockMvcRequestBuilders.get("/User")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("username", "TestUser"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getUsersInGroup() throws Exception{
+        user.addGroup("TestGroup");
+        user.addUserToGroup("TestGroup", "15", user2.getUserName());
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+
+        mvc.perform(MockMvcRequestBuilders.get("/User/Group")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("username", "TestUser")
+                .param("groupName", "TestGroup"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
     }
 }
