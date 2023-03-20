@@ -154,4 +154,19 @@ public class PostControllerTest {
                 .get("/Posts/AllPosts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void deleteGenericPostPost() throws Exception { //def didn't use mockito right here
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        user.createPost("Test", "This is a test post", "TestingUser", "Baking");
+        Post test = user.getPosts().get(0);
+        String postID = test.getPostID();
+        String validBody = "{\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"Test\",\"text\":\"This is a test post\",\"author\":\"TestingUser\",\"genre\":\"Baking\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .delete("/GeneralPost").contentType(MediaType.APPLICATION_JSON)
+                        .content(validBody))
+                .andExpect(status().isCreated());
+
+        assert user.getPosts().size() == 0;
+    }
 }
