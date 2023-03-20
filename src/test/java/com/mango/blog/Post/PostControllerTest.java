@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -83,7 +85,7 @@ public class PostControllerTest {
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/Posts/PostById").contentType(MediaType.APPLICATION_JSON)
-                .param("postID", postID).header("Authorization", "Basic YWRtaW46YWRtaW4="))
+                .param("postID", postID))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postID").value(postID))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.postName").value("Test Post"))
@@ -138,5 +140,18 @@ public class PostControllerTest {
                 .put("/Posts/UpdateGeneralPost").contentType(MediaType.APPLICATION_JSON).content(validBody)).andExpect(status().isOk());
 
         assert user.getPosts().get(0).getText().equals("This is an updated body");
+    }
+
+    @Test
+    void viewAllPosts() throws Exception{
+        user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
+        ArrayList<String> results = new ArrayList<>();
+        results.add("{\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"author\":\"TestUser\",\"createdOn\": {\"$date\": \"" + user.getPosts().get(0).getCreatedOn() + "\"}");
+
+        Mockito.when(repo.getAllPosts()).thenReturn(results);
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/Posts/AllPosts").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }
