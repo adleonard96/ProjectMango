@@ -156,4 +156,10 @@ public class PostController {
         String response = repo.getAllPosts().toString();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/Posts/AllPostsByUser")
+    public ResponseEntity<String> allPostsByUser(@RequestParam String userName){
+        String response = repo.getAllPostsByUser(userName);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
