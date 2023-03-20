@@ -241,6 +241,14 @@ public class User {
         }
         return null;
     }
+
+    public ArrayList<String> getGroups() {
+        ArrayList<String> groups = new ArrayList<>();
+        for (String group : userGroups.keySet()) {
+            groups.add(group);
+        }
+        return groups;
+    }
 }
 
 
