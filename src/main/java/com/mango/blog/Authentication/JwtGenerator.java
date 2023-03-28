@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class JwtGenerator implements JwtGeneratorInterface{
 
-    private final String SECRET = "Zr4u7x!A%C*F-JaNdRgUkXp2s5v8y/B?";
+    private final static String SECRET = "Zr4u7x!A%C*F-JaNdRgUkXp2s5v8y/B?";
 
     private String message = "Token generated successfully";
     @Override
@@ -31,4 +31,16 @@ public class JwtGenerator implements JwtGeneratorInterface{
         jwtTokenGen.put("message", message);
         return jwtTokenGen;
     }
+
+    public static String decodeToken(String jwt){
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        byte[] secretBytes = Base64.getEncoder().encode(SECRET.getBytes());
+        Key signingKey = new SecretKeySpec(secretBytes, signatureAlgorithm.getJcaName());
+        try{
+            return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(jwt).getBody().getSubject();
+        }catch (Exception e){
+            return null;
+        }
+    }
 }
+
