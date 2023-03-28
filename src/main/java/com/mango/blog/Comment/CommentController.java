@@ -1,33 +1,19 @@
 package com.mango.blog.Comment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mongodb.client.*;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import org.bson.Document;
-
-import jakarta.validation.Valid;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mango.blog.Post.GeneralPost;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Map;
 
-import java.time.LocalDateTime;
-
-import com.mango.blog.Post.PostController;
-import com.mango.blog.Post.GeneralPost;
-import com.mango.blog.Post.Post;
-
+import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 
 @RestController
@@ -43,7 +29,7 @@ public class CommentController {
     }
 
     @PostMapping("/Comment")
-    public ResponseEntity createComment(@RequestBody Map<String, String> body) throws JsonProcessingException 
+    public ResponseEntity createComment(@RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) throws JsonProcessingException
     {
         if (!body.containsKey("postID")) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PostID not found");
@@ -51,11 +37,12 @@ public class CommentController {
         if (!body.containsKey("text")) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Text not found");
         }
-        if (!body.containsKey("userName")) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Username not found");
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         
-        User commentUser = repo.findByUserName(body.get("userName"));
+        User commentUser = repo.findByUserName(author);
         if (commentUser == null) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("User not found");
         }
@@ -80,19 +67,19 @@ public class CommentController {
 
 
     @DeleteMapping("/Comment")
-    public ResponseEntity deleteComment(@RequestBody Map<String, String> body) throws JsonProcessingException{
+    public ResponseEntity deleteComment(@RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) throws JsonProcessingException{
         if (!body.containsKey("postID")) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("PostID not found");
         }
-        if (!body.containsKey("userName")) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Username not found");
-        }        if (!body.containsKey("postID")) {
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("commentID")) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("CommentID not found");
         }
 
-        User commentUser = repo.findByUserName(body.get("userName"));
+        User commentUser = repo.findByUserName(author);
         if (commentUser == null) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("User not found");
         }

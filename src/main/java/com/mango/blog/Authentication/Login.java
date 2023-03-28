@@ -46,7 +46,9 @@ public class Login implements Authentication {
 
     @PostMapping("/login")
     public ResponseEntity LoginUser(@RequestParam String userName, @RequestParam String password) throws NoSuchAlgorithmException {
-
+        if (this.jwtGenerator == null) {
+            this.jwtGenerator = new JwtGenerator();
+        }
         boolean isValid = false;
         String error = null;
         User tempUser;

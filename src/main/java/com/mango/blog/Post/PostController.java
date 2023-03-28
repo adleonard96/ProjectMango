@@ -1,26 +1,16 @@
 package com.mango.blog.Post;
 
 
-import com.mongodb.client.*;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
-import org.bson.Document;
-
-
-import jakarta.validation.Valid;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mango.blog.Comment.Comment;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
-
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 
 @RestController
@@ -36,11 +26,18 @@ public class PostController {
     }
 
     @PostMapping("Posts/GeneralPost")
-    public ResponseEntity<String> createGenericPostPost(@Valid @RequestBody GeneralPost post){
+    public ResponseEntity<String> createGenericPostPost(@Valid @RequestBody GeneralPost post, @RequestHeader("Authorization") String token){
         // Get the user from the database
-        if (post.getAuthor() == null){
+        //if (post.getAuthor() == null){
+        //    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        //}
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        } else {
+            post.setAuthor(author);
         }
+
         if (post.getPostName() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post Name is null");
         }
@@ -61,7 +58,13 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
     }
     @DeleteMapping("/GeneralPost")
-    public ResponseEntity<String> deleteGenericPostPost (@RequestBody GeneralPost post){
+    public ResponseEntity<String> deleteGenericPostPost (@RequestBody GeneralPost post, @RequestHeader("Authorization") String token){
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        } else {
+            post.setAuthor(author);
+        }
         User user = repo.findByUserName(post.getAuthor()); //Finding the user
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
@@ -124,9 +127,12 @@ public class PostController {
     }
 
     @PutMapping("/Posts/UpdateGeneralPost")
-    public ResponseEntity<String> updatePost(@RequestBody GeneralPost post){
-        if (post.getAuthor() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author not found");
+    public ResponseEntity<String> updatePost(@RequestBody GeneralPost post, @RequestHeader("Authorization") String token){
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        } else {
+            post.setAuthor(author);
         }
         if (post.getPostID() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
