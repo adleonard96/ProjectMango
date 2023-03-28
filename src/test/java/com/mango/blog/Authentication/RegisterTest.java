@@ -26,13 +26,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthenticationTest {
-
+public class RegisterTest {
     ObjectMapper objectMapper = new ObjectMapper();
     ObjectWriter objectWriter = objectMapper.writer();
 
@@ -42,7 +39,7 @@ public class AuthenticationTest {
     private UserRepository repo;
 
     @InjectMocks
-    private Login login = new Login(repo);
+    private Register login = new Register();
 
     @Autowired
     private MockMvc mvc;
@@ -65,32 +62,16 @@ public class AuthenticationTest {
 
         this.testUser1 = new User("testUser1", password, "test@emil.com");
     }
-
     @Test
-    void LoginUser() throws Exception {
-        Mockito.when(repo.findByUserName("testUser1")).thenReturn(testUser1);
-        Mockito.when(repo.findByUserName("faketestUser1")).thenReturn(null);
-        // login a correct user and assert true
-        mvc.perform(MockMvcRequestBuilders.post("/login")
-                .param("userName", "testUser1")
-                .param("password", "testPassword1"))
-                .andExpect(status().isFound());
-        //assert result.getResponse().getContentAsString().equals("true");
-
-        // Attempt for an incorrect usernmae and assert "User not found" since the
-        // username does not exist
-        mvc.perform(MockMvcRequestBuilders.post("/login")
-                .param("userName", "faketestUser1")
-                .param("password", "testPassword1"))
-                .andExpect(status().isNotFound());
-
-        // Attempt for an incorrect password and assert "Incorrect password" since the
-        // username does not exist
-        MvcResult result3 = mvc.perform(MockMvcRequestBuilders.post("/login")
-                .param("userName", "testUser1")
-                .param("password", "faketestPassword1"))
+    void RegisterUser() throws Exception {
+        Mockito.when(repo.findByUserName("user1")).thenReturn(null);
+        //register a user and assert 201 status code for created
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/register")
+                        .param("userName", "user1")
+                        .param("password", "password1")
+                        .param("email", "testemail@email.com"))
                 .andReturn();
-        assert result3.getResponse().getContentAsString().equals("Incorrect password");
-    }
 
+        assert result.getResponse().getStatus() == 201;
+    }
 }

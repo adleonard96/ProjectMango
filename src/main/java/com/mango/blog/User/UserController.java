@@ -1,13 +1,11 @@
 package com.mango.blog.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import jakarta.validation.Valid;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mango.blog.Repositiory.UserRepository;
-import com.mango.blog.User.User;
+import jakarta.validation.Valid;
 import org.bson.json.JsonObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 @RestController
 public class UserController {
@@ -27,9 +27,10 @@ public class UserController {
     }
 
     @PostMapping("/User/FavoritePost")
-    public ResponseEntity<String> addFavoritePost(@Valid @RequestBody Map<String, String> body) {
-        if (!body.containsKey("username")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing username");
+    public ResponseEntity<String> addFavoritePost(@Valid @RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) {
+        String username = decodeToken(token.split(" ")[1]);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("postID")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing postID");
@@ -37,7 +38,6 @@ public class UserController {
         if (!body.containsKey("postName")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing postName");
         }
-        String username = body.get("username");
         String postID = body.get("postID");
         String postName = body.get("postName");
         User user = repo.findByUserName(username);
@@ -53,14 +53,14 @@ public class UserController {
     }
 
     @DeleteMapping("/User/RemoveFavoritePost")
-    public ResponseEntity<String> removeFavoritePost(@Valid @RequestBody Map<String, String> body) {
-        if (!body.containsKey("username")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+    public ResponseEntity<String> removeFavoritePost(@Valid @RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) {
+        String username = decodeToken(token.split(" ")[1]);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("postID")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("PostID is required");
         }
-        String username = body.get("username");
         String postID = body.get("postID");
         User user = repo.findByUserName(username);
         if (user == null) {
@@ -121,9 +121,10 @@ public class UserController {
     }
 
     @PutMapping("/User/RemoveUserFromGroup")
-    public ResponseEntity<String> removeUserFromGroup(@Valid @RequestBody Map<String, String> body) {
-        if (!body.containsKey("username")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+    public ResponseEntity<String> removeUserFromGroup(@Valid @RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) {
+        String username = decodeToken(token.split(" ")[1]);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("groupName")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
@@ -131,7 +132,6 @@ public class UserController {
         if (!body.containsKey("userToRemove")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User to remove is required");
         }
-        String username = body.get("username");
         String groupName = body.get("groupName");
         String userToRemove = body.get("userToRemove");
         User user = repo.findByUserName(username);
@@ -146,14 +146,14 @@ public class UserController {
     }
 
     @DeleteMapping("/User/RemoveGroup")
-    public ResponseEntity<String> removeGroup(@Valid @RequestBody Map<String, String> body) {
-        if (!body.containsKey("username")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+    public ResponseEntity<String> removeGroup(@Valid @RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) {
+        String username = decodeToken(token.split(" ")[1]);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("groupName")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
         }
-        String username = body.get("username");
         String groupName = body.get("groupName");
         User user = repo.findByUserName(username);
         if (user == null) {
@@ -188,14 +188,14 @@ public class UserController {
     }
 
     @PostMapping("/User/Group")
-    public ResponseEntity<String> createGroup(@RequestBody Map<String, String> body) {
-        if (!body.containsKey("username")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+    public ResponseEntity<String> createGroup(@RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) {
+        String username = decodeToken(token.split(" ")[1]);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("groupName")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
         }
-        String username = body.get("username");
         String groupName = body.get("groupName");
         User user = repo.findByUserName(username);
         if (user == null) {
@@ -210,9 +210,10 @@ public class UserController {
     }
 
     @PutMapping("/User/Group")
-    public ResponseEntity<String> addUserToGroup(@RequestBody Map<String, String> body) {
-        if (!body.containsKey("username")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is required");
+    public ResponseEntity<String> addUserToGroup(@RequestBody Map<String, String> body, @RequestHeader("Authorization") String token) {
+        String username = decodeToken(token.split(" ")[1]);
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unauthorized");
         }
         if (!body.containsKey("groupName")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Group name is required");
@@ -220,7 +221,6 @@ public class UserController {
         if (!body.containsKey("userToAdd")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User to add is required");
         }
-        String username = body.get("username");
         String groupName = body.get("groupName");
         String userToAdd = body.get("userToAdd");
         User user = repo.findByUserName(username);

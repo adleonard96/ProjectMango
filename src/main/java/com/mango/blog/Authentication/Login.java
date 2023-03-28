@@ -1,29 +1,20 @@
 package com.mango.blog.Authentication;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.mango.blog.Repositiory.RegisterRepository;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Document(collection = "BlogData")
@@ -33,8 +24,13 @@ public class Login implements Authentication {
     private String userName;
     private String password;
 
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtGenerator jwtGenerator;
+
 
     public Login() {
     }
@@ -50,7 +46,9 @@ public class Login implements Authentication {
 
     @PostMapping("/login")
     public ResponseEntity LoginUser(@RequestParam String userName, @RequestParam String password) throws NoSuchAlgorithmException {
-
+        if (this.jwtGenerator == null) {
+            this.jwtGenerator = new JwtGenerator();
+        }
         boolean isValid = false;
         String error = null;
         User tempUser;
@@ -83,7 +81,7 @@ public class Login implements Authentication {
             return new ResponseEntity<>(error, HttpStatus.FOUND);
 
         // if we do tokens the token would be created and sent here
-        return new ResponseEntity<>(isValid, HttpStatus.FOUND);
+        return new ResponseEntity<>(jwtGenerator.generatetoken(tempUser), HttpStatus.FOUND);
 
     }
 
