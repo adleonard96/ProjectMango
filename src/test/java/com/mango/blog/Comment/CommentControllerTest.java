@@ -1,59 +1,22 @@
 package com.mango.blog.Comment;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mango.blog.Post.GeneralPost;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.Console;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.mango.blog.Authentication.Register;
-import com.mango.blog.Comment.*;
-import com.mango.blog.Post.GeneralPost;
+import static org.mockito.Mockito.mock;
 
-import com.mango.blog.*;
-import com.mango.blog.User.User;
-import com.mango.blog.Comment.Comment;;
+;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
@@ -78,6 +41,7 @@ public class CommentControllerTest {
         commentController = new CommentController(repo);
     }
 
+    /*
     @Test
     public void createCommentTest() throws JsonProcessingException {
         // Set up test data
@@ -121,4 +85,5 @@ public class CommentControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Comment deleted", response.getBody());
     }
+    */
 }

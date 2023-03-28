@@ -2,13 +2,13 @@ package com.mango.blog.Post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.mango.blog.Authentication.JwtGenerator;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -18,17 +18,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,6 +36,8 @@ public class PostControllerTest {
     private MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
     ObjectWriter objectWriter = objectMapper.writer();
+
+    private final JwtGenerator jwtGenerator = new JwtGenerator();
 
     User user = new User("TestUser", "Password", "test@user.com");
     User user2 = new User("TestUser2", "P4$$w0rd", "TestingUser");
@@ -62,10 +61,12 @@ public class PostControllerTest {
     @Test
     void createGenericPostPost() throws Exception {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
-        String validBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"author\":\"TestUser\",\"genre\":\"UnitTest\"}";
+        Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
+        String token = tokenMap.get("token");
+        String validBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"genre\":\"UnitTest\"}";
         mvc.perform(MockMvcRequestBuilders
                         .post("/Posts/GeneralPost").contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Basic YWRtaW46YWRtaW4=").content(validBody))
+                        .header("Authorization", "Bearer " + token).content(validBody))
                 .andExpect(status().isCreated());
 
         assert user.getPosts().size() == 1;
@@ -132,12 +133,18 @@ public class PostControllerTest {
         Post test = user.getPosts().get(0);
         String postID = test.getPostID();
 
-        String validBody = "{\"postID\":\"" + postID + "\",\"postName\":\"" + test.getPostName() + "\",\"text\":\"This is an updated body\",\"author\":\"" + test.getAuthor() + "\",\"genre\":\"" + test.getGenre() + "\"}";
+        String validBody = "{\"postID\":\"" + postID + "\",\"postName\":\"" + test.getPostName() + "\",\"text\":\"This is an updated body\",\"genre\":\"" + test.getGenre() + "\"}";
 
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
 
+        Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
+        String token = tokenMap.get("token");
+
         mvc.perform(MockMvcRequestBuilders
-                .put("/Posts/UpdateGeneralPost").contentType(MediaType.APPLICATION_JSON).content(validBody)).andExpect(status().isOk());
+                .put("/Posts/UpdateGeneralPost").contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token).
+                content(validBody)).andExpect(status().isOk());
+
 
         assert user.getPosts().get(0).getText().equals("This is an updated body");
     }
@@ -161,9 +168,12 @@ public class PostControllerTest {
         user.createPost("Test", "This is a test post", "TestingUser", "Baking");
         Post test = user.getPosts().get(0);
         String postID = test.getPostID();
-        String validBody = "{\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"Test\",\"text\":\"This is a test post\",\"author\":\"TestingUser\",\"genre\":\"Baking\"}";
+        String validBody = "{\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"Test\",\"text\":\"This is a test post\",\"genre\":\"Baking\"}";
+        Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
+        String token = tokenMap.get("token");
         mvc.perform(MockMvcRequestBuilders
                         .delete("/GeneralPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
                         .content(validBody))
                 .andExpect(status().isCreated());
 
