@@ -1,11 +1,11 @@
 package com.mango.blog.User;
 
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.mango.blog.Authentication.JwtGenerator;
 import com.mango.blog.Repositiory.UserRepository;
 import org.junit.Before;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
@@ -21,7 +21,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static net.bytebuddy.matcher.ElementMatchers.is;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,7 +38,7 @@ class UserControllerTest {
 
     User user = new User("TestUser", "Password", "test@user.com");
     User user2 = new User("TestUser2", "P4$$w0rd", "TestingUser");
-
+    private final JwtGenerator jwtGenerator = new JwtGenerator();
     @MockBean
     private UserRepository repo;
 
@@ -52,14 +53,20 @@ class UserControllerTest {
         MockitoAnnotations.initMocks(this);
         this.mvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
+    public String createToken() {
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
+        return tokenMap.get("token");
+    }
     @Test
     void addFavoritePost() throws Exception {
         user.createPost("Test Post 1", "This is a test post number 1", "TestUser", "Unit Testing");
-
+        String token = createToken();
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user2);
-        String invalidBodyWithoutPostID = "{\"username\":\"TestUser2\",\"postName\":\"" + user.getPosts().get(0).getPostName() + "\"}";
+        String invalidBodyWithoutPostID = "{\"postName\":\"" + user.getPosts().get(0).getPostName() + "\"}";
         mvc.perform(MockMvcRequestBuilders.post("/User/FavoritePost")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
                         .content(invalidBodyWithoutPostID))
                 .andExpect(status().isBadRequest());
 
@@ -67,6 +74,7 @@ class UserControllerTest {
         String validBody = "{\"username\":\"TestUser2\",\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"" + user.getPosts().get(0).getPostName() + "\"}";
         mvc.perform(MockMvcRequestBuilders.post("/User/FavoritePost")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .content(validBody))
                 .andExpect(status().isCreated());
 
@@ -80,11 +88,12 @@ class UserControllerTest {
     void removeFavoritePost() throws Exception {
         user.createPost("Test Post 1", "This is a test post number 1", "TestUser", "Unit Testing");
         user2.addFavoritePost(user.getPosts().get(0).getPostID(), user.getPosts().get(0).getPostName());
-
+        String token = createToken();
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user2);
         String invalidBodyWithoutPostID = "{\"username\":\"TestUser2\"}";
         mvc.perform(MockMvcRequestBuilders.delete("/User/RemoveFavoritePost")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .content(invalidBodyWithoutPostID))
                 .andExpect(status().isBadRequest());
 
@@ -93,6 +102,7 @@ class UserControllerTest {
         String validBody = "{\"username\":\"TestUser2\",\"postID\":\"" + user.getPosts().get(0).getPostID() + "\"}";
         mvc.perform(MockMvcRequestBuilders.delete("/User/RemoveFavoritePost")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .content(validBody))
                 .andExpect(status().isOk());
 
@@ -119,9 +129,10 @@ class UserControllerTest {
     void addUserGroup() throws Exception {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
-
+        String token = createToken();
         mvc.perform(MockMvcRequestBuilders.post("/User/Group")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .content(validBody))
                 .andExpect(status().isCreated());
 
@@ -144,11 +155,13 @@ class UserControllerTest {
     void removeUserFromGroup() throws Exception {
         user.addGroup("TestGroup");
         user.addUserToGroup("TestGroup", "15", user2.getUserName());
+        String token = createToken();
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
-        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\",\"userToRemove\":\"" + user2.getUserName() + "\"}";
+        String validBody = "{\"groupName\":\"TestGroup\",\"userToRemove\":\"" + user2.getUserName() + "\"}";
 
         mvc.perform((MockMvcRequestBuilders.put("/User/RemoveUserFromGroup")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .content(validBody)))
                 .andExpect(status().isOk());
 
@@ -158,12 +171,13 @@ class UserControllerTest {
     void removeGroup() throws Exception {
         user.addGroup("TestGroup");
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
-
-        String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
+        String token = createToken();
+        String validBody = "{\"groupName\":\"TestGroup\"}";
         assert user.getGroups().size() == 1;
 
         mvc.perform((MockMvcRequestBuilders.delete("/User/RemoveGroup")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .content(validBody)))
                 .andExpect(status().isOk());
 
