@@ -1,11 +1,8 @@
 package com.mango.blog.Comment;
 
-import com.mango.blog.Repositiory.UserRepository;
-import com.mango.blog.User.User;
-
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Comment {
     private String commentAuthor;
@@ -40,6 +37,16 @@ public class Comment {
 
     public String getCommentID() {
         return commentID;
+    }
+    public String commentJson(){
+        return "{" +
+                "\"commentAuthor\":\"" + commentAuthor + '\"' +
+                ", \"commentID\":\"" + commentID + '\"' +
+                ", \"createdOn\":\"" + createdOn + '\"' +
+                ", \"editedOn\":\"" + editedOn + '\"' +
+                ", \"text\":\"" + text + '\"' +
+                ", \"replies\":" + replies +
+                '}';
     }
 
     public void setCommentID(String commentID) {

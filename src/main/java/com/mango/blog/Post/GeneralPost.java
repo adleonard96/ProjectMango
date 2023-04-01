@@ -7,7 +7,6 @@ import com.mango.blog.Comment.Comment;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.annotation.PersistenceCreator;
 
 import java.time.LocalDateTime;
@@ -54,7 +53,7 @@ public class GeneralPost implements Post{
     public String toString() {
         return "{" +
                 "postID:" + postID +
-                ", comments:" + comments +
+                ", comments:" + getCommentsID().toString() +
                 ", author:'" + author + '\'' +
                 ", postName:'" + postName + '\'' +
                 ", createdOn:" + createdOn +
@@ -63,7 +62,19 @@ public class GeneralPost implements Post{
                 ", genre:'" + genre + '\'' +
                 '}';
     }
-
+    @Override
+    public String toJsonString() {
+        return "{" +
+                "\"postID\":\"" + postID + '\"' +
+                ", \"comments\":" + this.getCommentsID().toString() +
+                ", \"author\":\"" + author + '\"' +
+                ", \"postName\":\"" + postName + '\"' +
+                ", \"createdOn\":\"" + createdOn + '\"' +
+                ", \"editedOn\":\"" + editedOn + '\"' +
+                ", \"text\":\"" + text + '\"' +
+                ", \"genre\":\"" + genre + '\"' +
+                '}';
+    }
     @Override
     public void setAuthor(String author) {
         this.author = author;
@@ -91,6 +102,14 @@ public class GeneralPost implements Post{
         this.genre = genre;
     }
 
+    @Override
+    public ArrayList<String> getCommentsID() {
+        ArrayList<String> commentsID = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsID.add(comment.commentJson());
+        }
+        return commentsID;
+    }
     @Override
     public String getPostID() {
         return postID;
