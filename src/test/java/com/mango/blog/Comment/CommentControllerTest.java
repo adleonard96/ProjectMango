@@ -1,20 +1,27 @@
 package com.mango.blog.Comment;
 
-import com.mango.blog.Post.GeneralPost;
+import com.mango.blog.Authentication.JwtGenerator;
 import com.mango.blog.Repositiory.UserRepository;
 import com.mango.blog.User.User;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
+import java.util.Map;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 ;
 
@@ -24,66 +31,64 @@ import static org.mockito.Mockito.mock;
 public class CommentControllerTest {
 
     @MockBean
-    @Autowired
     private UserRepository repo;
-
     @InjectMocks
-    @Autowired
     private CommentController commentController = new CommentController(repo);
+    @Autowired
+    private MockMvc mvc;
+
+    private final JwtGenerator jwtGenerator = new JwtGenerator();
 
     User user = new User("user1", "password", "test@email.com");
-    GeneralPost post = new GeneralPost("1234", new ArrayList<Comment>(), "user1", "this is the post", "TestUser",
-            "testing");
+    User user2 = new User("user2", "password", "test2@email.com");
+
+
 
     @Before
     public void setup() {
-        repo = mock(UserRepository.class);
-        commentController = new CommentController(repo);
+        MockitoAnnotations.initMocks(this);
+        this.mvc = MockMvcBuilders.standaloneSetup(commentController).build();
     }
-
-    /*
     @Test
-    public void createCommentTest() throws JsonProcessingException {
-        // Set up test data
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("postID", "1234");
-        requestBody.put("text", "This is a comment");
-        requestBody.put("userName", "user1");
+    void createCommentTest() throws Exception {
+        user.createPost("Comment post", "This is a comment post", user.getUserName(), "UnitTesting");
+        Mockito.when(repo.findByUserName("user1")).thenReturn(user); //Post author
+        Mockito.when(repo.getPostsById("1234")).thenReturn(user.getPosts().get(0).toJsonString());
+        Mockito.when(repo.findByUserName("user2")).thenReturn(user2); //commenter
+        Mockito.when(repo.save(user)).thenReturn(user);
 
-        when(repo.findByUserName("user1")).thenReturn(user);
-        when(repo.getPostsById("1234")).thenReturn(new ObjectMapper().writeValueAsString(post));
-        user.getPosts().add(post); // add post to user
+        String jsonBody = "{\"postID\": \"1234\", \"text\": \"This is a comment\"}";
+        Map<String, String> tokenMap = jwtGenerator.generatetoken(user2);
+        String token = tokenMap.get("token");
 
-        // Call createComment
-        ResponseEntity response = commentController.createComment(requestBody);
-
-        // Assert the comment was created
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Comment created", response.getBody());
-
+        mvc.perform(MockMvcRequestBuilders
+                .post("/Comment")
+                .header("Authorization", "Bearer " + token)
+                .contentType("application/json")
+                .content(jsonBody))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void deleteCommentTest() throws JsonProcessingException {
-        user.getPosts().add(post); // add post to user
-        // create a comment, add it to the post
-        Comment comment = new Comment("user1", "This is a comment");
-        post.getComments().add(comment);
+    void deleteComment() throws Exception {
+        user.createPost("Comment post", "This is a comment post", user.getUserName(), "UnitTesting");
+        Comment comment = new Comment("user2", "This is a comment");
+        user.addComment(user.getPosts().get(0).getPostID(), comment);
+        Mockito.when(repo.findByUserName("user1")).thenReturn(user); //Post author
+        Mockito.when(repo.getPostsById(anyString())).thenReturn(user.getPosts().get(0).toJsonString());
+        Mockito.when(repo.findByUserName("user2")).thenReturn(user2); //commenter
+        Mockito.when(repo.save(user)).thenReturn(user);
 
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("postID", "1234");
-        requestBody.put("commentID", post.getComments().get(0).getCommentID());
-        requestBody.put("userName", "user1");
+        String jsonBody2 = "{\"postID\": \"1234\", \"commentID\": \"" + user.getPosts().get(0).getComments().get(0).getCommentID() + "\"}";
+        String jsonBody = "{\"postID\":" +" \"" + user.getPosts().get(0).getPostID() + "\"" + ", \"commentID\": \"" + user.getPosts().get(0).getComments().get(0).getCommentID() + "\"}";
+        Map<String, String> tokenMap = jwtGenerator.generatetoken(user2);
+        String token = tokenMap.get("token");
 
-        when(repo.findByUserName("user1")).thenReturn(user);
-        when(repo.getPostsById("1234")).thenReturn(new ObjectMapper().writeValueAsString(post));
-
-        // Call createComment
-        ResponseEntity response = commentController.deleteComment(requestBody);
-
-        // Assert the comment was deleted
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Comment deleted", response.getBody());
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/Comment")
+                .header("Authorization", "Bearer " + token)
+                .contentType("application/json")
+                .content(jsonBody))
+                .andExpect(status().isOk());
     }
-    */
 }
