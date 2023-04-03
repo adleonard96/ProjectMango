@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import java.util.Base64;
 
 @RestController
 @Document(collection = "BlogData")
+@CrossOrigin(origins = "http://localhost:3000")
 public class Login implements Authentication {
 
     @Field
@@ -49,8 +51,6 @@ public class Login implements Authentication {
         if (this.jwtGenerator == null) {
             this.jwtGenerator = new JwtGenerator();
         }
-        boolean isValid = false;
-        String error = null;
         User tempUser;
         try {
             tempUser = userRepository.findByUserName(userName);
@@ -58,7 +58,6 @@ public class Login implements Authentication {
             tempUser = null;
         }
         if (tempUser == null) {
-            error = "User not found";
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
 
@@ -72,16 +71,11 @@ public class Login implements Authentication {
         byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
         String hashedPass = salt + encoder.encodeToString(hashedPassword);
         if (storedPass.equals(hashedPass)) {
-            isValid = true;
+            return new ResponseEntity<>(jwtGenerator.generatetoken(tempUser), HttpStatus.FOUND);
         } else {
-            error = "Incorrect password";
+            return new ResponseEntity<>("invalid password", HttpStatus.FOUND);
         }
-
-        if (error != null)
-            return new ResponseEntity<>(error, HttpStatus.FOUND);
-
-        // if we do tokens the token would be created and sent here
-        return new ResponseEntity<>(jwtGenerator.generatetoken(tempUser), HttpStatus.FOUND);
+        
 
     }
 

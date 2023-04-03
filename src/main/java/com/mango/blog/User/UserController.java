@@ -18,6 +18,7 @@ import java.util.Map;
 import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     final UserRepository repo;
