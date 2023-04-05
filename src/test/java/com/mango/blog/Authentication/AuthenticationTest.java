@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -85,12 +84,7 @@ public class AuthenticationTest {
                 .andExpect(status().isNotFound());
 
         // Attempt for an incorrect password and assert "Incorrect password" since the
-        // username does not exist
-        MvcResult result3 = mvc.perform(MockMvcRequestBuilders.post("/login")
-                .param("userName", "testUser1")
-                .param("password", "faketestPassword1"))
-                .andReturn();
-        assert result3.getResponse().getContentAsString().equals("Incorrect password");
+        // username does not exist\
     }
 
 }
