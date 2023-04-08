@@ -2,25 +2,14 @@ package com.mango.blog.Repositiory;
 
 import com.mango.blog.User.User;
 import com.mongodb.client.*;
-
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Projections;
-
-import java.util.Arrays;
-import java.util.ArrayList;
-
-import org.bson.Document;
-
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import org.bson.Document;
-
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,5 +129,24 @@ public interface UserRepository extends MongoRepository<User, String>{
             json.add(post.toJson());
         }
         return json.toString();
+    }
+
+    public default ArrayList<String> getUsersWithWhoFavoritedAPost(String postID, String postName){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
+        MongoDatabase database = mongoClient.getDatabase("MangoDB");
+        MongoCollection<Document> collection = database.getCollection("BlogData");
+        AggregateIterable<Document> users;
+        String filterKey = "favoritePosts." + postID;
+        users = collection.aggregate(
+                Arrays.asList(
+                        Aggregates.unwind("$favoritePosts"),
+                        Aggregates.match(Filters.eq(filterKey, postName))
+                )
+        );
+        ArrayList<String> userNames = new ArrayList<>();
+        for(Document user : users){
+            userNames.add(user.get("userName").toString());
+        }
+        return userNames;
     }
 }
