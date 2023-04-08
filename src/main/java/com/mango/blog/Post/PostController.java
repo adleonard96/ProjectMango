@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 
@@ -53,7 +55,7 @@ public class PostController {
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
-        user.createPost(post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
+        user.createPost(post.getPostName(), post.getText(), post.getAuthor(), post.getGenre());
         // Save the user to the database
         repo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
@@ -70,9 +72,16 @@ public class PostController {
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
+        post = (GeneralPost) user.getPost(post.getPostID());
         if (!user.deletePost(post.getPostID(),post.getPostName(), post.getText(), post.getGenre(), post.getAuthor())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
         }  //sending the post to the chopping block
+        ArrayList<String> userWhoFavorited = repo.getUsersWithWhoFavoritedAPost(post.getPostID(), post.getPostName());
+        for (String userWhoFavoritedPost : userWhoFavorited){
+            User userWhoFavoritedPostUser = repo.findByUserName(userWhoFavoritedPost);
+            userWhoFavoritedPostUser.unfavoritePost(post.getPostID());
+            repo.save(userWhoFavoritedPostUser);
+        }
         repo.save(user); //save new user
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Deleted");
     }

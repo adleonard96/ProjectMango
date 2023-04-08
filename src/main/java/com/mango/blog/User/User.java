@@ -1,6 +1,7 @@
 package com.mango.blog.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mango.blog.Comment.Comment;
 import com.mango.blog.Post.Post;
 import com.mango.blog.Post.PostFactory;
 import lombok.AllArgsConstructor;
@@ -13,9 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
-
-import com.mango.blog.Comment.*;
 
 @Data
 @AllArgsConstructor
@@ -250,6 +248,15 @@ public class User {
             groups.add(group);
         }
         return groups;
+    }
+
+    public Post getPost(String postID){
+        for(Post post: this.posts){
+            if(post.getPostID().equals(postID)){
+                return post;
+            }
+        }
+        return null;
     }
 }
 

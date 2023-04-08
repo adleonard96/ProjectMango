@@ -130,4 +130,23 @@ public interface UserRepository extends MongoRepository<User, String>{
         }
         return json.toString();
     }
+
+    public default ArrayList<String> getUsersWithWhoFavoritedAPost(String postID, String postName){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
+        MongoDatabase database = mongoClient.getDatabase("MangoDB");
+        MongoCollection<Document> collection = database.getCollection("BlogData");
+        AggregateIterable<Document> users;
+        String filterKey = "favoritePosts." + postID;
+        users = collection.aggregate(
+                Arrays.asList(
+                        Aggregates.unwind("$favoritePosts"),
+                        Aggregates.match(Filters.eq(filterKey, postName))
+                )
+        );
+        ArrayList<String> userNames = new ArrayList<>();
+        for(Document user : users){
+            userNames.add(user.get("userName").toString());
+        }
+        return userNames;
+    }
 }
