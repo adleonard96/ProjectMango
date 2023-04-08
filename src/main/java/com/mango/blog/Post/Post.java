@@ -34,7 +34,9 @@ public interface Post {
     String getText();
     String getGenre();
     String getAuthor();
+    String toJsonString();
 
     ArrayList<Comment> getComments();
+    ArrayList<String> getCommentsID();
     void addComment(Comment comment);
 }   

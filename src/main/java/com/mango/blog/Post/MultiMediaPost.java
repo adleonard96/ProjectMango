@@ -83,4 +83,18 @@ public class MultiMediaPost implements Post{
     public String getAuthor() {
         return author;
     }
+
+    @Override
+    public String toJsonString() {
+        return null;
+    }
+
+    @Override
+    public ArrayList<String> getCommentsID() {
+        ArrayList<String> commentsID = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsID.add(comment.getCommentID());
+        }
+        return commentsID;
+    }
 }
