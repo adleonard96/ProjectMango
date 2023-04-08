@@ -14,6 +14,7 @@ import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class PostController {
 
 
