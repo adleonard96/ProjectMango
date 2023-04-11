@@ -14,7 +14,7 @@ import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class PostController {
 
 
@@ -53,7 +53,7 @@ public class PostController {
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
-        user.createPost(post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
+        user.createPost(post.getPostName(), post.getText(), post.getAuthor(), post.getGenre());
         // Save the user to the database
         repo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
