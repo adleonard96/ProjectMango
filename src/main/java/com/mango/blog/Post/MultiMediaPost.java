@@ -1,24 +1,44 @@
 package com.mango.blog.Post;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mango.blog.Comment.Comment;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.PersistenceCreator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.UUID;
 
-
+@Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"comments", "createdOn", "editedOn"})
 public class MultiMediaPost implements Post{
-    public String postID = null;
+    public String postID = UUID.randomUUID().toString();
     public ArrayList<Comment> comments;
     public String author = null;
     public String postName = null;
-    public String postBody = null;
     public LocalDateTime createdOn = LocalDateTime.now();
     public LocalDateTime editedOn = LocalDateTime.now();
     public String text = null;
     public String genre = null;
+    public String media = null;
 
+    @PersistenceCreator
     public MultiMediaPost(String postName, String text, String author, String genre, String media) {
+        this.postName = postName;
+        this.text = text;
+        this.author = author;
+        this.genre = genre;
+        this.media = media;
         comments = new ArrayList<>();
+    }
+
+    public String getMedia() {
+        return media;
+    }
+    public void setMedia(String media) {
+        this.media = media;
     }
 
     @Override
