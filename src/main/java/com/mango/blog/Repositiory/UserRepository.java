@@ -29,7 +29,6 @@ public interface UserRepository extends MongoRepository<User, String>{
         MongoClient mongoClient = MongoClients.create("mongodb+srv://MangoAdmin:TdINg8HrP5HLNLJU@projectmango.34hfodq.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase database = mongoClient.getDatabase("MangoDB");
         MongoCollection<Document> collection = database.getCollection("BlogData");
-
         AggregateIterable<Document> posts;
         posts = collection.aggregate(
             Arrays.asList(
@@ -46,6 +45,7 @@ public interface UserRepository extends MongoRepository<User, String>{
         for (Document post : posts) {
             json.add(post.toJson());
         }
+        mongoClient.close();
         return json;
 
     }
@@ -62,8 +62,9 @@ public interface UserRepository extends MongoRepository<User, String>{
                         Aggregates.match(Filters.eq("postID", postID))
                 )
         );
-
-        return posts.first().toJson();
+        String json = posts.first().toJson();
+        mongoClient.close();
+        return json;
     }
 
     public default String getGenres(){
@@ -85,6 +86,7 @@ public interface UserRepository extends MongoRepository<User, String>{
         for(Document post : posts){
             json.add(post.toJson());
         }
+        mongoClient.close();
         return json.toString();
     }
 
@@ -109,6 +111,7 @@ public interface UserRepository extends MongoRepository<User, String>{
         for(Document post : posts){
             json.add(post.toJson());
         }
+        mongoClient.close();
         return json.toString();
     };
 
@@ -128,6 +131,7 @@ public interface UserRepository extends MongoRepository<User, String>{
         for(Document post : posts){
             json.add(post.toJson());
         }
+        mongoClient.close();
         return json.toString();
     }
 
@@ -147,6 +151,7 @@ public interface UserRepository extends MongoRepository<User, String>{
         for(Document user : users){
             userNames.add(user.get("userName").toString());
         }
+        mongoClient.close();
         return userNames;
     }
 }
