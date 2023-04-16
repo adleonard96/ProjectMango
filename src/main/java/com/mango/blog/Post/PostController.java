@@ -55,7 +55,7 @@ public class PostController {
         }
         user.createPost(body.get("postName"), body.get("text"), author, body.get("genre"), body.get("media"), body.get("fileExtension"));
         repo.save(user);
-        return ResponseEntity.status(HttpStatus.OK).body("Post created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Post created");
     }
     @PostMapping("Posts/GeneralPost")
     public ResponseEntity<String> createGenericPostPost(@Valid @RequestBody GeneralPost post, @RequestHeader("Authorization") String token){
