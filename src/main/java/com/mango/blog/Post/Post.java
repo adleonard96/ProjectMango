@@ -41,4 +41,5 @@ public interface Post {
     void addComment(Comment comment);
 
     void setMedia(String base64);
+    void setFileExtension(String fileExtension);
 }   

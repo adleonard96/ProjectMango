@@ -164,5 +164,8 @@ public class GeneralPost implements Post{
     @Override
     public void setMedia(String base64) {
     }
+    @Override
+    public void setFileExtension(String fileExtension) {
+    }
 
 }
