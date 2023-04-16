@@ -23,14 +23,16 @@ public class MultiMediaPost implements Post{
     public String text = null;
     public String genre = null;
     public String media = null;
+    public String fileExtension = null;
 
     @PersistenceCreator
-    public MultiMediaPost(String postName, String text, String author, String genre, String media) {
+    public MultiMediaPost(String postName, String text, String author, String genre, String media, String fileExtension) {
         this.postName = postName;
         this.text = text;
         this.author = author;
         this.genre = genre;
         this.media = media;
+        this.fileExtension = fileExtension;
         comments = new ArrayList<>();
     }
 
@@ -116,5 +118,13 @@ public class MultiMediaPost implements Post{
             commentsID.add(comment.getCommentID());
         }
         return commentsID;
+    }
+    public String getFileExtension() {
+        return fileExtension;
+    }
+
+    @Override
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
     }
 }

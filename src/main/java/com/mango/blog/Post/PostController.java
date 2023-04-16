@@ -46,11 +46,14 @@ public class PostController {
         if (!body.containsKey("media")){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Media is null");
         }
+        if (!body.containsKey("fileExtension")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File Extension is null");
+        }
         User user = repo.findByUserName(author);
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
-        user.createPost(body.get("postName"), body.get("text"), author, body.get("genre"), body.get("media"));
+        user.createPost(body.get("postName"), body.get("text"), author, body.get("genre"), body.get("media"), body.get("fileExtension"));
         repo.save(user);
         return ResponseEntity.status(HttpStatus.OK).body("Post created");
     }
@@ -191,6 +194,41 @@ public class PostController {
         }
 
         user.updatePost(post.getPostID(), post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("Post Updated");
+
+    }
+    @PutMapping("/Posts/MultiMediaPost")
+    public ResponseEntity<String> updateMultiMediaPost(@RequestBody MultiMediaPost post, @RequestHeader("Authorization") String token){
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        } else {
+            post.setAuthor(author);
+        }
+        if (post.getPostID() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("PostID not found");
+        }
+        if (post.getPostName() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post name not found");
+        }
+        if (post.getText() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post text not found");
+        }
+        if (post.getGenre() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post genre not found");
+        }
+        if (post.getMedia() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post media not found");
+        }
+        User user = repo.findByUserName(post.getAuthor());
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+        }
+
+        if (!user.updatePost(post.getPostID(), post.getPostName(), post.getText(), post.getGenre(), post.getAuthor(), post.getMedia(), post.getFileExtension())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
+        }
         repo.save(user);
         return ResponseEntity.status(HttpStatus.OK).body("Post Updated");
 
