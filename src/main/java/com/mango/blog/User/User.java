@@ -111,6 +111,13 @@ public class User {
         posts.add(post);
     }
 
+    public void createPost(String postName, String text, String author, String genre, String base64, String fileExtension) {
+        if (postFactory == null) {
+            postFactory = new PostFactory();
+        }
+        Post post = postFactory.createPost(postName, text, author, genre, base64, fileExtension);
+        posts.add(post);
+    }
 
     public boolean deletePost(String postID, String postName, String text, String genre, String author){
         for(Post post: this.posts){
@@ -135,6 +142,21 @@ public class User {
         }
     }
 
+    public boolean updatePost(String postID, String postName, String text, String genre, String author, String base64, String fileExtension) {
+        for (Post post : posts) {
+            if (post.getPostID().equals(postID)) {
+                post.setPostName(postName);
+                post.setText(text);
+                post.setGenre(genre);
+                post.setAuthor(author);
+                post.setEditedOn(LocalDateTime.now());
+                post.setMedia(base64);
+                post.setFileExtension(fileExtension);
+                return true;
+            }
+        }
+        return false;
+    }
     public void addFavoritePost(String postID, String postName) {
         HashMap<String, String> favoritePost = new HashMap<>();
         favoritePost.put(postID, postName);
