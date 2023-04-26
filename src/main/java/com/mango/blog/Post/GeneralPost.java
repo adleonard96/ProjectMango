@@ -167,5 +167,13 @@ public class GeneralPost implements Post{
     @Override
     public void setFileExtension(String fileExtension) {
     }
+    @Override
+    public String getMedia() {
+        return null;
+    }
+    @Override
+    public String getFileExtension() {
+        return null;
+    }
 
 }

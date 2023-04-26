@@ -63,7 +63,7 @@ public class RegisterTest {
         this.testUser1 = new User("testUser1", password, "test@emil.com");
     }
     @Test
-    void RegisterUser() throws Exception {
+    public void RegisterUser() throws Exception {
         Mockito.when(repo.findByUserName("user1")).thenReturn(null);
         //register a user and assert 201 status code for created
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/register")
