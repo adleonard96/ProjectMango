@@ -42,4 +42,6 @@ public interface Post {
 
     void setMedia(String base64);
     void setFileExtension(String fileExtension);
+    String getMedia();
+    String getFileExtension();
 }   

@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+public
 class UserControllerTest {
 
     private MockMvc mockMvc;
@@ -59,7 +60,7 @@ class UserControllerTest {
         return tokenMap.get("token");
     }
     @Test
-    void addFavoritePost() throws Exception {
+    public void addFavoritePost() throws Exception {
         user.createPost("Test Post 1", "This is a test post number 1", "TestUser", "Unit Testing");
         String token = createToken();
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user2);
@@ -85,7 +86,7 @@ class UserControllerTest {
     }
 
     @Test
-    void removeFavoritePost() throws Exception {
+    public void removeFavoritePost() throws Exception {
         user.createPost("Test Post 1", "This is a test post number 1", "TestUser", "Unit Testing");
         user2.addFavoritePost(user.getPosts().get(0).getPostID(), user.getPosts().get(0).getPostName());
         String token = createToken();
@@ -110,7 +111,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getFavoritePosts() throws Exception {
+    public void getFavoritePosts() throws Exception {
         user.createPost("Test Post 1", "This is a test post number 1", "TestUser", "Unit Testing");
         user.createPost("Test Post 2", "This is a test post number 2", "TestUser", "Unit Testing");
 
@@ -126,7 +127,7 @@ class UserControllerTest {
 
     }
     @Test
-    void addUserGroup() throws Exception {
+    public void addUserGroup() throws Exception {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         String validBody = "{\"username\":\"" + user.getUserName() + "\",\"groupName\":\"TestGroup\"}";
         String token = createToken();
@@ -140,7 +141,7 @@ class UserControllerTest {
 
     }
     @Test
-    void getUserGroups() throws Exception {
+    public void getUserGroups() throws Exception {
         user.addGroup("TestGroup");
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         mvc.perform(MockMvcRequestBuilders.get("/User/Groups")
@@ -152,7 +153,7 @@ class UserControllerTest {
     }
 
     @Test
-    void removeUserFromGroup() throws Exception {
+    public void removeUserFromGroup() throws Exception {
         user.addGroup("TestGroup");
         user.addUserToGroup("TestGroup", "15", user2.getUserName());
         String token = createToken();
@@ -168,7 +169,7 @@ class UserControllerTest {
     }
 
     @Test
-    void removeGroup() throws Exception {
+    public void removeGroup() throws Exception {
         user.addGroup("TestGroup");
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         String token = createToken();
@@ -185,7 +186,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserDetails() throws Exception{
+    public void getUserDetails() throws Exception{
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
 
         mvc.perform(MockMvcRequestBuilders.get("/User")
@@ -195,7 +196,7 @@ class UserControllerTest {
     }
 
     @Test
-    void getUsersInGroup() throws Exception{
+    public void getUsersInGroup() throws Exception{
         user.addGroup("TestGroup");
         user.addUserToGroup("TestGroup", "15", user2.getUserName());
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
@@ -206,5 +207,18 @@ class UserControllerTest {
                 .param("groupName", "TestGroup"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    public void getAllPostsForAUser() throws Exception{
+        user.createPost("Test Post 1", "This is a test post number 1", "TestUser", "Unit Testing");
+        user.createPost("Test Post 2", "This is a test post number 2", "TestUser", "Unit Testing");
+        Mockito.when(repo.getAllPostsByUser(anyString())).thenReturn(user.getPosts().toString());
+
+        mvc.perform(MockMvcRequestBuilders.get("/Posts/AllPostsByUser")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("userName", "TestUser"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
     }
 }
