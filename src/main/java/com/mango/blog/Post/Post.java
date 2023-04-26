@@ -39,4 +39,7 @@ public interface Post {
     ArrayList<Comment> getComments();
     ArrayList<String> getCommentsID();
     void addComment(Comment comment);
+
+    void setMedia(String base64);
+    void setFileExtension(String fileExtension);
 }   
