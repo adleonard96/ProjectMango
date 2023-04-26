@@ -119,6 +119,8 @@ public class MultiMediaPost implements Post{
         }
         return commentsID;
     }
+
+    @Override
     public String getFileExtension() {
         return fileExtension;
     }
