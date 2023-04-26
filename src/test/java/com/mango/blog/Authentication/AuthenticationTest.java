@@ -66,7 +66,7 @@ public class AuthenticationTest {
     }
 
     @Test
-    void LoginUser() throws Exception {
+    public void LoginUser() throws Exception {
         Mockito.when(repo.findByUserName("testUser1")).thenReturn(testUser1);
         Mockito.when(repo.findByUserName("faketestUser1")).thenReturn(null);
         // login a correct user and assert true
