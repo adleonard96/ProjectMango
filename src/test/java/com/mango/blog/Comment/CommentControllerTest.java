@@ -70,7 +70,7 @@ public class CommentControllerTest {
     }
 
     @Test
-    void deleteComment() throws Exception {
+    public void deleteComment() throws Exception {
         user.createPost("Comment post", "This is a comment post", user.getUserName(), "UnitTesting");
         Comment comment = new Comment("user2", "This is a comment");
         user.addComment(user.getPosts().get(0).getPostID(), comment);

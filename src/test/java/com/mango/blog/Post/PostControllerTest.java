@@ -59,7 +59,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void createGenericPostPost() throws Exception {
+    public void createGenericPostPost() throws Exception {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
         String token = tokenMap.get("token");
@@ -77,7 +77,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void postById() throws Exception {
+    public void postById() throws Exception {
         user.createPost("Test Post", "This is a test post", "TestUser", "UnitTest");
         Post test = user.getPosts().get(0);
         String postID = test.getPostID();
@@ -97,7 +97,7 @@ public class PostControllerTest {
 
 
     @Test
-    void getGenres() throws Exception {
+    public void getGenres() throws Exception {
         user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
         user.createPost("Test Post 2", "This is a test post", user.getUserName(), "Mockito");
         user.createPost("Test Post 3", "This is a test post", user.getUserName(), "JUnit");
@@ -112,7 +112,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void postsByGenre() throws Exception {
+    public void postsByGenre() throws Exception {
         user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
         user.createPost("Test Post 2", "This is a test post", user.getUserName(), "Mockito");
         user.createPost("Test Post 3", "This is a test post", user.getUserName(), "JUnit");
@@ -128,7 +128,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void updatePost() throws Exception {
+    public void updatePost() throws Exception {
         user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
         Post test = user.getPosts().get(0);
         String postID = test.getPostID();
@@ -150,7 +150,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void viewAllPosts() throws Exception{
+    public void viewAllPosts() throws Exception{
         user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest");
         ArrayList<String> results = new ArrayList<>();
         results.add("{\"postID\":\"" + user.getPosts().get(0).getPostID() + "\",\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"author\":\"TestUser\",\"createdOn\": {\"$date\": \"" + user.getPosts().get(0).getCreatedOn() + "\"}");
@@ -163,7 +163,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void deleteGenericPostPost() throws Exception { //def didn't use mockito right here
+    public void deleteGenericPostPost() throws Exception { //def didn't use mockito right here
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         user.createPost("Test", "This is a test post", "TestingUser", "Baking");
         Post test = user.getPosts().get(0);
@@ -181,7 +181,7 @@ public class PostControllerTest {
     }
 
     @Test
-    void createMultiMediaPost() throws Exception {
+    public void createMultiMediaPost() throws Exception {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
         String token = tokenMap.get("token");
@@ -191,11 +191,51 @@ public class PostControllerTest {
                         .header("Authorization", "Bearer " + token)
                         .content(validBody))
                 .andExpect(status().isCreated());
+        //Test for missing postname
+        String invalidBody = "{\"text\":\"This is a test post\",\"genre\":\"UnitTest\",\"media\":\"image\",\"fileExtension\":\"JPG\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(invalidBody))
+                .andExpect(status().isBadRequest());
+        //Test for missing text
+        invalidBody = "{\"postName\":\"Test Post\",\"genre\":\"UnitTest\",\"media\":\"image\",\"fileExtension\":\"JPG\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(invalidBody))
+                .andExpect(status().isBadRequest());
+        //Test for missing genre
+        invalidBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"media\":\"image\",\"fileExtension\":\"JPG\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(invalidBody))
+                .andExpect(status().isBadRequest());
+        //Test for missing media
+        invalidBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"genre\":\"UnitTest\",\"fileExtension\":\"JPG\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(invalidBody))
+                .andExpect(status().isBadRequest());
+        //Test for missing file extension
+        invalidBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"genre\":\"UnitTest\",\"media\":\"image\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(invalidBody))
+                .andExpect(status().isBadRequest());
+        //Test for missing token
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidBody))
+                .andExpect(status().isBadRequest());
 
     }
 
     @Test
-    void updateMultiMediaPost() throws Exception {
+    public void updateMultiMediaPost() throws Exception {
         Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
         user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest", "image", "JPG");
         Post test = user.getPosts().get(0);

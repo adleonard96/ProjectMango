@@ -76,16 +76,4 @@ public class Comment {
     public void setText(String text) {
         this.text = text;
     }
-
-    public ArrayList<Comment> getReplies() {
-        return replies;
-    }
-
-    public void setReplies(ArrayList<Comment> replies) {
-        this.replies = replies;
-    }
-
-
-    
-
 }

@@ -15,18 +15,21 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1'
-	implementation 'org.projectlombok:lombok:1.18.22'
-	implementation 'org.projectlombok:lombok:1.18.22'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
+	implementation 'org.projectlombok:lombok:1.18.26'
+	implementation 'org.projectlombok:lombok:1.18.26'
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 	implementation 'javax.json.bind:javax.json.bind-api:1.0'
-	implementation 'javax.xml.bind:jaxb-api:2.3.1'
-	testImplementation 'junit:junit:4.13.1'
+	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+	testImplementation 'junit:junit:4.13.2'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.4'
+	testImplementation 'org.junit.platform:junit-platform-engine:1.9.2'
+	testImplementation 'org.junit.platform:junit-platform-launcher:1.9.2'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+
 }
