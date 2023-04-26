@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.mango.blog.Authentication.JwtGenerator.decodeToken;
 
@@ -27,7 +28,35 @@ public class PostController {
         this.repo = repo;
 
     }
-
+    @PostMapping("Posts/MultiMediaPost")
+    public ResponseEntity<String> createMultiMediaPost(@RequestBody HashMap<String, String> body, @RequestHeader("Authorization") String token){
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        }
+        if (!body.containsKey("postName")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post Name is null");
+        }
+        if (!body.containsKey("text")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Text is null");
+        }
+        if (!body.containsKey("genre")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Genre is null");
+        }
+        if (!body.containsKey("media")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Media is null");
+        }
+        if (!body.containsKey("fileExtension")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File Extension is null");
+        }
+        User user = repo.findByUserName(author);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+        }
+        user.createPost(body.get("postName"), body.get("text"), author, body.get("genre"), body.get("media"), body.get("fileExtension"));
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Post created");
+    }
     @PostMapping("Posts/GeneralPost")
     public ResponseEntity<String> createGenericPostPost(@Valid @RequestBody GeneralPost post, @RequestHeader("Authorization") String token){
         // Get the user from the database
@@ -61,18 +90,21 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Post Created");
     }
     @DeleteMapping("/GeneralPost")
-    public ResponseEntity<String> deleteGenericPostPost (@RequestBody GeneralPost post, @RequestHeader("Authorization") String token){
+    public ResponseEntity<String> deleteGenericPostPost (@RequestBody HashMap<String, String> postID, @RequestHeader("Authorization") String token){
         String author = decodeToken(token.split(" ")[1]);
+        Post post;
         if (author == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
-        } else {
-            post.setAuthor(author);
         }
-        User user = repo.findByUserName(post.getAuthor()); //Finding the user
+        User user = repo.findByUserName(author); //Finding the user
         if (user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
         }
-        post = (GeneralPost) user.getPost(post.getPostID());
+        if (!postID.containsKey("postID")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post ID is null");
+        }
+        post = user.getPost(postID.get("postID"));
+        //post = (GeneralPost) user.getPost(post.getPostID());
         if (!user.deletePost(post.getPostID(),post.getPostName(), post.getText(), post.getGenre(), post.getAuthor())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
         }  //sending the post to the chopping block
@@ -162,6 +194,41 @@ public class PostController {
         }
 
         user.updatePost(post.getPostID(), post.getPostName(), post.getText(), post.getGenre(), post.getAuthor());
+        repo.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("Post Updated");
+
+    }
+    @PutMapping("/Posts/MultiMediaPost")
+    public ResponseEntity<String> updateMultiMediaPost(@RequestBody MultiMediaPost post, @RequestHeader("Authorization") String token){
+        String author = decodeToken(token.split(" ")[1]);
+        if (author == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Author is null");
+        } else {
+            post.setAuthor(author);
+        }
+        if (post.getPostID() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("PostID not found");
+        }
+        if (post.getPostName() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post name not found");
+        }
+        if (post.getText() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post text not found");
+        }
+        if (post.getGenre() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post genre not found");
+        }
+        if (post.getMedia() == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post media not found");
+        }
+        User user = repo.findByUserName(post.getAuthor());
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+        }
+
+        if (!user.updatePost(post.getPostID(), post.getPostName(), post.getText(), post.getGenre(), post.getAuthor(), post.getMedia(), post.getFileExtension())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post not found");
+        }
         repo.save(user);
         return ResponseEntity.status(HttpStatus.OK).body("Post Updated");
 

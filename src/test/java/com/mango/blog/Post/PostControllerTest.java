@@ -179,4 +179,38 @@ public class PostControllerTest {
 
         assert user.getPosts().size() == 0;
     }
+
+    @Test
+    void createMultiMediaPost() throws Exception {
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
+        String token = tokenMap.get("token");
+        String validBody = "{\"postName\":\"Test Post\",\"text\":\"This is a test post\",\"genre\":\"UnitTest\",\"media\":\"image\",\"fileExtension\":\"JPG\"}";
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(validBody))
+                .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    void updateMultiMediaPost() throws Exception {
+        Mockito.when(repo.findByUserName(anyString())).thenReturn(user);
+        user.createPost("Test Post", "This is a test post", user.getUserName(), "UnitTest", "image", "JPG");
+        Post test = user.getPosts().get(0);
+        String postID = test.getPostID();
+
+        String validBody = "{\"postID\":\"" + postID + "\",\"postName\":\"" + test.getPostName() + "\",\"text\":\"This is an updated body\",\"genre\":\"" + test.getGenre() + "\",\"media\":\"image\",\"fileExtension\":\"JPG\"}";
+
+        Map<String,String> tokenMap = jwtGenerator.generatetoken(user);
+        String token = tokenMap.get("token");
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/Posts/MultiMediaPost").contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token).
+                        content(validBody)).andExpect(status().isOk());
+
+        assert user.getPosts().get(0).getText().equals("This is an updated body");
+    }
 }
